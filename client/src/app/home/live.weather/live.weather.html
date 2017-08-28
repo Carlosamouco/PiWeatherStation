@@ -1,0 +1,81 @@
+
+<div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h2 style="margin-bottom: 0; font-weight: bold;"> Marco de Canaveses </h2>
+        <h3 style="margin-top: 0;"> Porto </h3>
+        <span> {{ date }} </span>
+      </div>
+    </div>
+</div>
+
+<div class="container">
+  <div class="row">      
+    <div class="col-md-12 text-center">
+      <skycons-canvas [properties]="porperties"></skycons-canvas>
+      <span id="weather-name"> {{ weather.name }} </span>
+    </div>
+    <div class="col-md-12 text-center">
+      <span id="weather-temp"> {{ liveData? liveData.temperature: '--.-' }}ºC </span>
+      <span *ngIf="!liveData || liveData.risingTemp" style="position: absolute; top: 0;" class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+      <span *ngIf="!liveData || !liveData.risingTemp" class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+    </div>
+  </div>    
+</div>
+
+<div class="container" style="margin-top: 20px;">
+  <div class="row">    
+    <div class="col-md-6">      
+      <div class="row" style="padding: 5px">        
+        <div class="col-md-12" style="border: solid; padding: 10px;">
+          <h4 style="margin-top: 0;">Dados das Últimas 24H</h4>
+          <ul style="margin-bottom: 0">
+            <li> Temperatura:
+              <ul>
+                <li> {{ dayData.maxTemp }}ºC </li>
+                <li> {{ dayData.minTemp }}ºC </li>
+              </ul>
+            </li>
+            <li> Humidade:
+              <ul>
+                <li> {{ dayData.maxHum }}% </li>
+                <li> {{ dayData.minHum }}% </li>
+              </ul>
+            </li>
+            <li> Pressão:
+              <ul>
+                <li> {{ dayData.maxPre }} milibares </li>
+                <li> {{ dayData.minPre }} milibares </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">      
+      <div class="row" style="padding: 5px;">        
+        <div class="col-md-12" style="border: solid; padding: 10px;">
+          <h4 style="margin-top: 0;">Dados Atmosféricos</h4>
+          <ul style="margin-bottom: 0">
+            <li> 
+              Humidade: {{ liveData? liveData.humidity: '--.-' }}% 
+              <span *ngIf="!liveData || liveData.risingHum" style="font-size: 10px;" class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+              <span *ngIf="!liveData || !liveData.risingHum" style="font-size: 10px;" class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> 
+            </li>
+            <li> 
+              Pressão: {{ liveData? liveData.pressure: '--.-' }} milibares
+              <span *ngIf="!liveData || liveData.risingPres" style="font-size: 10px;" class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+              <span *ngIf="!liveData || !liveData.risingPres" style="font-size: 10px;" class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+            </li>
+            <li> Vento: {{ forecast? forecast.ffVento + ' km/h ' + forecast.ddVento : '-- Km/h'  }} </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>    
+</div>
+
+
+
+
+

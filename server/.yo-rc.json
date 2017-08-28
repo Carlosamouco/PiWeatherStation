@@ -1,0 +1,16 @@
+{
+  "generator-ng-fullstack": {
+    "appName": "weatherAPI",
+    "username": "Carlos Samouco",
+    "userEmail": "carlosamouco@gmail.com",
+    "stack": "server",
+    "repoHostUrl": "github.com",
+    "userNameSpace": "Carlos Samouco",
+    "client": "",
+    "server": "node",
+    "nodeWebFrameworkServer": "express",
+    "transpilerServer": "typescript",
+    "secure": false,
+    "testsSeparated": true
+  }
+}

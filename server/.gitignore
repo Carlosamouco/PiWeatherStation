@@ -1,0 +1,6 @@
+# compiled output
+/server
+
+# dependencies
+/node_modules
+/typings

@@ -1,0 +1,46 @@
+version: "2.1"
+
+services:
+  database:
+    build: ./database
+    volumes:
+      - /var/lib/postgresql
+    ports: 
+      - "5432:5432"
+    env_file:
+      - ./database/.env
+
+  pgadmin:
+    build: ./pgadmin
+    volumes:
+      - ./pgadmin:/data
+    ports:
+      - "5050:5050"
+    links:
+      - database:postgres
+
+  client:
+    build: ./client
+    volumes:
+      - ./client:/usr/src/app
+      - /usr/src/app/node_modules
+    ports: 
+      - "4200:4200"
+
+  server:
+    build: ./server
+    volumes:
+      - ./server:/usr/src/app
+      - /usr/src/app/node_modules
+    ports: 
+      - "3333:3333"
+    links:
+      - database:postgres
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    links:
+      - client
+      - server
