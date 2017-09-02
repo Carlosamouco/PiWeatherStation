@@ -2,20 +2,25 @@ import * as io from 'socket.io-client';
 
 import { ConfigService } from './../../configs/config.service';
 
+
+export interface LiveData {
+  pressure: number,
+  temperature: number,
+  humidity: number,
+  risingTemp: boolean,
+  risingHum: boolean,
+  risingPres: boolean,
+  creation_date: string
+}
+
 export class LiveWeatherSocket {
 
   private static instance: LiveWeatherSocket;
   private socket: SocketIOClient.Socket;
   private subsribers: Function[] = [];
 
-  private constructor () { }
-
-  public static getInstance() {
-    if (!LiveWeatherSocket.instance) {
-      LiveWeatherSocket.instance = new LiveWeatherSocket();
-      LiveWeatherSocket.instance.initSocket();
-    }
-    return LiveWeatherSocket.instance;
+  constructor () { 
+    this.initSocket();
   }
 
   private initSocket() {

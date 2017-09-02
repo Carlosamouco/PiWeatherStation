@@ -10,6 +10,7 @@ export interface Measure {
     risingTemp: Boolean;
     risingPres: Boolean;
     risingHum: Boolean;
+    creation_date: string;
 }
 
 export class WeatherHistory {
@@ -22,63 +23,6 @@ export class WeatherHistory {
     }
 
     static addMeasure(_measure: Measure) {       
-        return DBConfig.init().pool.query('INSERT INTO "weather history" (temperature, pressure, humidity) VALUES ($1, $2, $3)', [_measure.temperature, _measure.pressure, _measure.humidity]);
+        return DBConfig.init().pool.query('INSERT INTO "weather history" (temperature, pressure, humidity, creation_date) VALUES ($1, $2, $3, $4)', [_measure.temperature, _measure.pressure, _measure.humidity, _measure.creation_date]);
     }
 }
-
-/*
-todoSchema.static("getAll", ():Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
-
-        Todo.find(_query)
-            .exec((err, todos) => {
-              err ? reject(err)
-                  : resolve(todos);
-            });
-    });
-});
-
-todoSchema.static("getById", (id: string):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-        if (!id) {
-          return reject(new TypeError("Todo is not a valid object."));
-        }
-
-        Todo.findById(id)
-            .exec((err, todo) => {
-              err ? reject(err)
-                  : resolve(todo);
-            });
-    });
-});
-
-todoSchema.static("createTodo", (todo:Object):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(todo)) {
-        return reject(new TypeError("Todo is not a valid object."));
-      }
-
-      var _todo = new Todo(todo);
-
-      _todo.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
-    });
-});
-
-todoSchema.static("deleteTodo", (id:string):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isString(id)) {
-            return reject(new TypeError("Id is not a valid string."));
-        }
-
-        Todo.findByIdAndRemove(id)
-            .exec((err, deleted) => {
-              err ? reject(err)
-                  : resolve();
-            });
-    });
-});
-*/

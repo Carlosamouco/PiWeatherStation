@@ -1,3 +1,24 @@
+export interface HistoryData {
+  creation_date: string,
+  humidity: string,
+  measure_id: string,
+  pressure: string,
+  temperature: string
+}
+
+
+export interface ParamData {
+  max: { value: number, date: string }[];
+  min: { value: number, date: string }[];
+  mid?: number;
+}
+
+export interface DayData {
+  temperature: ParamData;
+  humidity: ParamData;
+  pressure: ParamData;
+}
+
 export class ForecastData {
   dataPrev: string;
   dataUpdate: string;

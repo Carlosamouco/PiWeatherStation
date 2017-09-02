@@ -1,16 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { trigger,  state,  style,  animate,  transition, AnimationEvent, keyframes } from '@angular/animations';
 
 import { WeatherType, SkyconsProperties, SkyconsCanvas } from './../../skycons';
-import { WindForceTypes, ForecastTypes, ForecastData } from './../forecast.types';
-import { LiveWeatherSocket } from './socket.service';
-import { ForecastUtils } from './../forecast.utils';
-
-interface LiveData {
-  pressure: number,
-  temperature: number,
-  humidity: number,
-  rising: Boolean
-}
+import { WindForceTypes, ForecastTypes, ForecastData } from './../utils/forecast.types';
+import { LiveWeatherSocket, LiveData } from './../services/socket.service';
+import { ForecastUtils } from './../utils/forecast.utils';
 
 interface HistoryData {
   creation_date: string,
@@ -23,92 +17,85 @@ interface HistoryData {
 @Component({
   selector: 'live-weather',
   templateUrl: 'live.weather.html',
-  styleUrls: ['./live.weather.css']
+  styleUrls: ['./live.weather.css'],
+  animations: [
+    trigger('fadeAnim', [
+      state('inactive', style({
+        opacity: 1
+      })),
+      state('active',   style({
+        opacity: 0
+      })),
+      transition('inactive => active', animate(200, keyframes([
+        style({opacity: 1, offset: 0}),
+        style({opacity: 0, offset: 1.0})
+      ]))),
+      transition('active => inactive', animate(200, keyframes([
+        style({opacity: 0, offset: 0}),
+        style({opacity: 1, offset: 1.0})
+      ])))
+    ])
+  ]
 })
 export class LiveWeather implements OnInit {
   @Input() forecast: ForecastData;
   @Input() dayHistory: HistoryData[];
 
-  private liveData: LiveData;
- 
-  private porperties: SkyconsProperties;
-  private date: string;
-  private dayData = { maxTemp: -99, minTemp: 99, maxHum: 0, minHum: 100, maxPre: 0, minPre: 2000 };
-  private weather;
+  public liveData: LiveData;
+  public porperties: SkyconsProperties;
+  public date: string;
+  public state: string = 'inactive';
+  public weather;  
+
+  private tempLiveData: LiveData;
 
 
-  constructor() {
+  constructor(socket: LiveWeatherSocket) {
     this.date = new Date().toLocaleString();
     let upTime = 1000 - new Date().getMilliseconds();
-    const handle = setInterval(() => {
+    setTimeout(() => {
       this.date = new Date().toLocaleString();
       setInterval(() => {
         this.date = new Date().toLocaleString();
       }, 1000);
-      clearInterval(handle);
     }, upTime);    
-    LiveWeatherSocket.getInstance().subscribe(this.onDataRcv);
+    socket.subscribe(this.onDataRcv);
   }
 
   ngOnInit() {
     this.initWeatherIcon();
-    this.initWeatherDayHistory(this.dayHistory);
   }
 
-  public onDataRcv: Function = (data: LiveData) => {
+  public onDataRcv: Function = (data: LiveData) => {    
     data.humidity = Math.round(data.humidity * 100) / 100;
     data.pressure = Math.round(data.pressure * 100) / 100;
     data.temperature = Math.round(data.temperature * 100) / 100;
-    
-    this.updateDayHistory(data.temperature, data.humidity, data.pressure);
-    this.liveData = data;
-  }
-
-  private initWeatherDayHistory(data: HistoryData[]): void {
-    for(let i in data) {
-      const dayTemp = parseFloat(data[i].temperature);
-      const dayHum = parseFloat(data[i].humidity);
-      const dayPre = parseFloat(data[i].pressure);
-
-      this.updateDayHistory(dayTemp, dayHum, dayPre);
+        
+    if(!this.liveData) {
+      this.liveData = data;
+    }
+    else {
+      this.tempLiveData = data;
+      this.state = 'active';
     }
   }
 
-  private updateDayHistory(dayTemp: number, dayHum: number, dayPre: number): void {
-    if(this.dayData.maxTemp < dayTemp) {
-      this.dayData.maxTemp = dayTemp;
-    }
-
-    if(this.dayData.minTemp > dayTemp) {
-      this.dayData.minTemp = dayTemp;
-    }
-
-    if(this.dayData.maxHum < dayHum) {
-      this.dayData.maxHum = dayHum;
-    }
-
-    if(this.dayData.minHum > dayHum) {
-      this.dayData.minHum = dayHum;
-    }
-
-    if(this.dayData.maxPre < dayPre) {
-      this.dayData.maxPre = dayPre;
-    }
-
-    if(this.dayData.minPre > dayPre) {
-      this.dayData.minPre = dayPre;
+  public animationDone: Function = (event: AnimationEvent) => {
+    if(event.toState === 'active') {
+      this.liveData = this.tempLiveData;
+      this.state = 'inactive';
     }
   }
 
   private initWeatherIcon(): void {
-    const isDay = ForecastUtils.isDay(new Date(this.forecast.dataPrev + 'Z'), this.forecast.globalIdLocal);
+    const isDay = ForecastUtils.isDay(new Date(this.forecast.dataPrev + 'Z'), this.forecast.globalIdLocal);  
     this.weather = ForecastTypes[this.forecast.idTipoTempo];
     if(isDay) {      
-      if(this.weather.day) {
+      if(this.weather.day !== undefined) {
         this.porperties = { height: 50, width: 50, type: this.weather.day, configs: {} };
       }
     }
-    else if(this.weather.night) {
+    else if(this.weather.night !== undefined) {
       this.porperties = { height: 50, width: 50, type: this.weather.night, configs: {} };
     }
   }

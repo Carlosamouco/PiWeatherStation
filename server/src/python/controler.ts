@@ -29,11 +29,11 @@ export default class PythonControler {
     const measure: Measure = JSON.parse(results[0]);
 
     let size: number = Object.keys(measure).length;
-    if(size != 3) {
-      throw `Invalide object length. Expected 3 but found ${size}.`;
+    if(size != 4) {
+      throw `Invalid object length. Expected 3 but found ${size}.`;
     }
 
-    const keys: string[] = ['temperature', 'pressure', 'humidity'];
+    const keys: string[] = ['temperature', 'pressure', 'humidity', 'creation_date'];
     for(let i in keys) {
       if (!(keys[i] in measure)) {
         throw `Missing key ${keys[i]}.`;

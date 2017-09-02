@@ -4,6 +4,7 @@
   display: inline-block;
   position: relative;
   font-weight: bold;
+  vertical-align: middle;
   top: -20px;
 }
 
@@ -15,6 +16,46 @@
 
 }
 
+.live-data {
+  height: 120px;
+}
+
+.side-row {
+  position: relative;
+  top: -40px;
+}
+
+.side-row > div > h4 {
+  margin-bottom: 0; 
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.side-data-container {
+  font-size: 15px;
+}
+
+.side-data-container .glyphicon  {
+  font-size: 11px;
+  top: 0px;
+}
+
+.side-row > div {
+  text-align: center;
+}
+
 .text-center {
   text-align: center;
 }
+
+@media only screen and (max-width : 768px) {
+  .side-row {
+    position: initial;
+  }
+
+  .live-data {
+    height: auto;
+  }
+}
+
+

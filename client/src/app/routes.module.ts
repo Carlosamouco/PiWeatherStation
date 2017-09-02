@@ -4,11 +4,11 @@ import { RouterModule, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot  } f
 import { HttpClient } from '@angular/common/http';
 
 import { Home } from './home';
-import { ForecastData } from './home/forecast.types';
+import { ForecastData } from './home/utils/forecast.types';
 
 
 @Injectable()
-class ForecastResolver implements Resolve<ForecastData[]> {
+export class ForecastResolver implements Resolve<ForecastData[]> {
   constructor(private http: HttpClient) {}
  
   resolve(
@@ -20,7 +20,7 @@ class ForecastResolver implements Resolve<ForecastData[]> {
 }
 
 @Injectable()
-class DayHistoryResolver implements Resolve<ForecastData[]> {
+export class DayHistoryResolver implements Resolve<ForecastData[]> {
   constructor(private http: HttpClient) {}
  
   resolve(

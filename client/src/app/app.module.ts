@@ -1,7 +1,6 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
-import { BsDropdownModule } from 'ngx-bootstrap';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
 import { HomeModule } from './home';
@@ -12,8 +11,8 @@ import { RoutesModule } from './routes.module';
     AppComponent  
   ],
   imports: [
-    BsDropdownModule.forRoot(),
     BrowserModule,
+    BrowserAnimationsModule,
     RoutesModule,
     HomeModule
   ],

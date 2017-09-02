@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute  } from '@angular/router';
 
-import { ForecastData } from './forecast.types';
+import { ForecastData } from './utils/forecast.types';
 
 @Component({
   selector: 'home',
@@ -10,8 +10,8 @@ import { ForecastData } from './forecast.types';
 })
 export class Home { 
   private forecastData: ForecastData[];
-  private currentForecast: ForecastData;
-  private dayHistory;
+  public currentForecast: ForecastData;
+  public dayHistory;
   private route: ActivatedRoute;
 
   constructor(route: ActivatedRoute) { 
