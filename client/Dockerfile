@@ -1,8 +1,4 @@
-FROM node
-
-ENV HOME=/home/app
-
-WORKDIR $HOME
+FROM arm32v7/node
 
 RUN npm install -g --unsafe-perm @angular/cli
 

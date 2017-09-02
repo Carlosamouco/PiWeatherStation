@@ -1,1 +1,1 @@
-FROM fenglc/pgadmin4
+FROM izone/arm:pgadmin

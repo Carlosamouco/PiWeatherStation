@@ -44,7 +44,7 @@ export default class PythonControler {
   }
 
   public static MakeMeasurement(): void {
-    PythonControler.RunPythonShell('teste.py')
+    PythonControler.RunPythonShell('weather.py')
       .then(results => {
         const data: Measure = PythonControler.ParseResults(results);
         if(PythonControler.lastMeasure) {
