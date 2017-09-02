@@ -46,7 +46,7 @@ export class TemperatureChart {
         }
 
         if(!set) {
-          for(let n in day.temperature.max) {          
+          for(let n in day.temperature.min) {          
             if(day.temperature.min[n].date === hData[i].creation_date) {
               pointsRadius.push(4);
               set = true;
