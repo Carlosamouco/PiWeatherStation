@@ -174,6 +174,9 @@ export class TemperatureChart {
             legend: {
               display: false,
             },
+            line: {
+              tension: 0,
+            },
             scales: {
               xAxes: [{
                   type: 'category',
