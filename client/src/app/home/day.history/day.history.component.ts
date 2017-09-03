@@ -21,6 +21,10 @@ export class DayHistory implements OnInit {
   @ViewChild('humChart') humChart: ElementRef;
   @ViewChild('presChart') presChart: ElementRef;
 
+  private tc: TemperatureChart;
+  private hc: HumidityChart;
+  private pc: PressureChart;
+  private dataReceived = false;
   public dayData: DayData;
   
   constructor(socket: LiveWeatherSocket) { 
@@ -32,12 +36,12 @@ export class DayHistory implements OnInit {
   }
 
   public ngAfterViewInit() {  
-    let tc = new TemperatureChart(this.tempChart.nativeElement);
-    let hc = new HumidityChart(this.humChart.nativeElement);
-    let pc = new PressureChart(this.presChart.nativeElement);
-    tc.buildChart(this.dayHistory, this.dayData);   
-    hc.buildChart(this.dayHistory, this.dayData);  
-    pc.buildChart(this.dayHistory, this.dayData);  
+    this.tc = new TemperatureChart(this.tempChart.nativeElement);
+    this.tc.buildChart(this.dayHistory, this.dayData);   
+    this.hc = new HumidityChart(this.humChart.nativeElement)
+    this.hc.buildChart(this.dayHistory, this.dayData);  
+    this.pc = new PressureChart(this.presChart.nativeElement)
+    this.pc.buildChart(this.dayHistory, this.dayData);  
   }
 
   public formateDate(date: any[]): string{
@@ -81,11 +85,37 @@ export class DayHistory implements OnInit {
   }
 
   public onDataRcv: Function = (data: LiveData) => {
+    if(!this.dataReceived) {
+      this.dataReceived = true;
+      return;
+    }
+
     data.humidity = Math.round(data.humidity * 100) / 100;
     data.pressure = Math.round(data.pressure * 100) / 100;
-    data.temperature = Math.round(data.temperature * 100) / 100;
-
+    data.temperature = Math.round(data.temperature * 100) / 100;    
     this.updateDayHistory(data.temperature, data.humidity, data.pressure, data.creation_date);
+
+    if(this.dayHistory.length > 0) {
+      let time1 = new Date(data.creation_date).toLocaleTimeString();
+      time1 = time1.substring(0, time1.length - 3);
+  
+      let time2 = new Date(this.dayHistory[0].creation_date).toLocaleTimeString();
+      time2 = time2.substring(0, time2.length - 3);
+      this.dayHistory.push({
+        humidity: data.humidity + '',
+        temperature: data.temperature + '',
+        pressure: data.pressure + '',
+        creation_date: data.creation_date,
+        measure_id: '',
+      });
+
+      if(time1 === time2) {
+        this.dayHistory.shift();   
+      }
+      this.tc.buildChart(this.dayHistory, this.dayData);
+      this.hc.buildChart(this.dayHistory, this.dayData);  
+      this.pc.buildChart(this.dayHistory, this.dayData);
+    }  
   }
 
   private updateDayHistory(dayTemp: number, dayHum: number, dayPre: number, date: string): void {

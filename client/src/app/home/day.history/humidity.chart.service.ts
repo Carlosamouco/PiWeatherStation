@@ -4,6 +4,7 @@ import { HistoryData, ParamData, DayData } from './../utils/forecast.types';
 
 export class HumidityChart {
   private ctx: HTMLCanvasElement;
+  private chart: Chart;
   
   public constructor(ctx: HTMLCanvasElement) {  
     this.ctx = ctx;
@@ -65,49 +66,53 @@ export class HumidityChart {
   
   public buildChart(data: HistoryData[], day: DayData) { 
     const parsedData = this.buildLabels(data, day);
-    const chart = new Chart(this.ctx, {
-      type: 'line',
-      data: {
-          labels: parsedData.labels,
-          datasets: parsedData.datasets,
-      },
-      options: {
-          tooltips: {
-            mode: 'nearest',
-            intersect: false,
-            callbacks:{
-              title:function(point, data){
-                const datasetIndex = point[0].datasetIndex;
-                const index = point[0].index;
-                return data.datasets[datasetIndex].data[index].x;
-              }
-            }
-          },
-          hover: {
-            mode: 'nearest',
-            intersect: false,
-          },
-          title: {
-            text: 'Variação da humidade nas últimas 24 horas',
-            display: true,
-          },
-          legend: {
-            display: false,
-          },
-          elements: {
-            line: {
-              tension: 0
-            }
-          },
-          scales: {
-            xAxes: [{
-                type: 'category',
-            }]},
-          responsive: true,
-          maintainAspectRatio: true,
-      }
-    });
 
-    return chart;
+    if(!this.chart) {
+      this.chart = new Chart(this.ctx, {
+        type: 'line',
+        data: {
+            labels: parsedData.labels,
+            datasets: parsedData.datasets,
+        },
+        options: {
+            tooltips: {
+              mode: 'nearest',
+              intersect: false,
+            },
+            animation: {
+              duration: 0,
+            },
+            hover: {
+              mode: 'nearest',
+              intersect: false,
+              animationDuration: 0,
+            },
+            title: {
+              text: 'Variação da humidade nas últimas 24 horas',
+              display: true,
+            },
+            legend: {
+              display: false,
+            },
+            elements: {
+              line: {
+                tension: 0
+              }
+            },
+            scales: {
+              xAxes: [{
+                  type: 'category',
+              }]},
+            responsive: true,
+            maintainAspectRatio: true,
+            responsiveAnimationDuration: 0,
+        }
+      });
+    }
+    else {
+      this.chart.data.labels = parsedData.labels;
+      this.chart.data.datasets = parsedData.datasets;
+      this.chart.update();
+    }
   }
 }
