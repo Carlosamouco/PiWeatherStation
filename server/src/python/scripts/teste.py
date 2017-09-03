@@ -7,6 +7,11 @@ TEMPERATURE = uniform(-20.0, 45.0)
 HUMIDITY = uniform(0.0, 100.0)
 PRESSURE = uniform(950.0, 1150.0)
 
-JSON = {"temperature": TEMPERATURE, "humidity": HUMIDITY, "pressure": PRESSURE, "creation_date": datetime.now().isoformat()}
+JSON = {
+    "temperature": TEMPERATURE,
+    "humidity": HUMIDITY, 
+    "pressure": PRESSURE, 
+    "creation_date": datetime.now().isoformat() + 'Z'
+}
 
 print(json.dumps(JSON, ensure_ascii=False))
