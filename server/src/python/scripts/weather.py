@@ -37,6 +37,11 @@ HUMIDITY = round(sum(humList) / len(humList), 2)
 
 # print(TEMPERATURE2)
 
-JSON = {"temperature": TEMPERATURE, "humidity": HUMIDITY, "pressure": PRESSURE, "creation_date": datetime.now().isoformat()}
+JSON = {
+    "temperature": TEMPERATURE,
+    "humidity": HUMIDITY,
+    "pressure": PRESSURE,
+    "creation_date": datetime.now().isoformat() + 'Z'
+}
 
 print(json.dumps(JSON, ensure_ascii=False))
