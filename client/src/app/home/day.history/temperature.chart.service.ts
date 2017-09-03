@@ -1,7 +1,7 @@
 import Chart from 'chart.js';
 
 import { HistoryData, ParamData, DayData } from './../utils/forecast.types';
-
+import { LocalDateFormater } from './../utils/localdateformater';
 
 export class TemperatureChart {
   private ctx: HTMLCanvasElement;
@@ -24,8 +24,7 @@ export class TemperatureChart {
 
     for(let i = 0; i < hData.length; i++) {
 
-      let time = new Date(hData[i].creation_date).toLocaleTimeString();
-      time = time.substring(0, time.length - 3);
+      let time = LocalDateFormater.formate(hData[i].creation_date);
       if(colors.length !== 1) {
         labels.push(time);
       }

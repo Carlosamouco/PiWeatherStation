@@ -7,6 +7,7 @@ import { HistoryData, ParamData, DayData } from './../utils/forecast.types';
 import { TemperatureChart } from './temperature.chart.service';
 import { HumidityChart } from './humidity.chart.service';
 import { PressureChart } from './pressure.chart.service';
+import { LocalDateFormater } from './../utils/localdateformater';
 
 @Component({
   selector: 'day-history',
@@ -96,11 +97,9 @@ export class DayHistory implements OnInit {
     this.updateDayHistory(data.temperature, data.humidity, data.pressure, data.creation_date);
 
     if(this.dayHistory.length > 0) {
-      let time1 = new Date(data.creation_date).toLocaleTimeString();
-      time1 = time1.substring(0, time1.length - 3);
-  
-      let time2 = new Date(this.dayHistory[0].creation_date).toLocaleTimeString();
-      time2 = time2.substring(0, time2.length - 3);
+      let time1 = LocalDateFormater.formate(data.creation_date);  
+      let time2 = LocalDateFormater.formate(this.dayHistory[0].creation_date);
+      
       this.dayHistory.push({
         humidity: data.humidity + '',
         temperature: data.temperature + '',
