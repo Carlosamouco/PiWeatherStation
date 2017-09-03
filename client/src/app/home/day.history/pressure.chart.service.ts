@@ -1,6 +1,7 @@
 import Chart from 'chart.js';
 
 import { HistoryData, ParamData, DayData } from './../utils/forecast.types';
+import { LocalDateFormater } from './../utils/localdateformater';
 
 export class PressureChart {
   private ctx: HTMLCanvasElement;
@@ -20,8 +21,7 @@ export class PressureChart {
     let pointBorderColor: string[] = []
 
     for(let i = 0; i < hData.length; i++) {
-      let time = new Date(hData[i].creation_date).toLocaleTimeString();
-      time = time.substring(0, time.length - 3);
+      let time = LocalDateFormater.formate(hData[i].creation_date);
       labels.push(time);
       data.push({ y: parseFloat(hData[i].pressure), x: time });
 
