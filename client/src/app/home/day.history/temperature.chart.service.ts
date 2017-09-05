@@ -21,13 +21,12 @@ export class TemperatureChart {
     let pointsBackgroundColor: string[] = [];
     let pointBorderColor: string[] = []
     let colors = [];
+    let lineColors = [];
 
     for(let i = 0; i < hData.length; i++) {
 
       let time = LocalDateFormater.formate(hData[i].creation_date);
-      if(colors.length !== 1) {
-        labels.push(time);
-      }
+      labels.push(time);
       data.push({ y: parseFloat(hData[i].temperature), x: time });
 
       const c = this.calcColor(parseFloat(hData[i].temperature));
@@ -58,29 +57,21 @@ export class TemperatureChart {
           pointsRadius.push(0);
         }
       }
-
-      if(colors.length === 2) {
-        const border = this.calcColor((data[0].y + data[1].y) / 2);
-        datasets.push({
-          label: 'Temperatura',
-          data: data,
-          fill: true,
-          pointBackgroundColor: pointsBackgroundColor,
-          pointBorderColor: pointBorderColor,
-          pointRadius: pointsRadius,
-          borderColor: border.rgb,
-        });
-
-        data = [];
-        pointsRadius = [];
-        pointsBackgroundColor = [];
-        pointBorderColor = [];
-        colors = [];
-        i--;
+      if(i > 0) {
+        lineColors.push(this.calcColor((data[i].y + data[i - 1].y) / 2));
       }
     }
 
-    return { datasets, labels };
+    datasets.push({
+      label: 'Temperatura',
+      data: data,
+      fill: true,
+      pointBackgroundColor: pointsBackgroundColor,
+      pointBorderColor: pointBorderColor,
+      pointRadius: pointsRadius,
+    });
+
+    return { datasets, labels, lineColors };
   }
 
   private RGBAtoRGB(r: number, g: number, b: number, a: number, r2 = 255, g2 = 255, b2 = 255) {
@@ -139,12 +130,51 @@ export class TemperatureChart {
     }
   }
 
+  
+
   public buildChart(data: HistoryData[], day: DayData) { 
     const parsedData = this.buildLabels(data, day);
 
+    Chart.defaults.temperatureChart = Chart.defaults.line;
+
+    let tempChart = Chart.controllers.line.extend({
+      draw: function(ease) {
+        Chart.controllers.line.prototype.draw.call(this, ease);
+
+        // Now we can do some custom drawing for this dataset. Here we'll draw a red box around the first point in each dataset
+        var data = this.getMeta().data;
+
+        var ctx = this.chart.chart.ctx;
+
+
+        let p0 = data[50 - 1];
+        let p1 = data[50];
+        let p2 = data[51 - 1];
+        let p3 = data[51];
+        
+        ctx.save();       
+        
+        for(let i = 1; i < data.length; i++) {
+          let p0 = data[i - 1];
+          let p1 = data[i];          
+
+          ctx.beginPath();
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = parsedData.lineColors[i - 1].rgb;
+          ctx.moveTo(p0._view.x, p0._view.y);
+          ctx.lineTo(p1._view.x, p1._view.y);
+          ctx.stroke();
+          ctx.closePath();
+        }
+        ctx.restore();
+      }      
+  });
+
+  Chart.controllers.temperatureChart = tempChart; 
+
     if(!this.chart) {
       this.chart = new Chart(this.ctx, {
-      type: 'line',
+      type: 'temperatureChart',
       data: {
           labels: parsedData.labels,
           datasets: parsedData.datasets,
@@ -161,6 +191,7 @@ export class TemperatureChart {
               }
             }
           },
+          showLines: false,
           animation: {
             duration: 0,
           },

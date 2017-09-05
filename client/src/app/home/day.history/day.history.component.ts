@@ -33,6 +33,16 @@ export class DayHistory implements OnInit {
   }
 
   public ngOnInit() {
+
+    if(this.dayHistory.length > 1) {
+      const date1 = LocalDateFormater.formate(this.dayHistory[0].creation_date);
+      const date2 = LocalDateFormater.formate(this.dayHistory[this.dayHistory.length - 1].creation_date);
+
+      if(date1 === date2) {
+        this.dayHistory.shift();
+      }
+    }
+
     this.initWeatherDayHistory(this.dayHistory);
   }
 
@@ -95,26 +105,29 @@ export class DayHistory implements OnInit {
     data.pressure = Math.round(data.pressure * 100) / 100;
     data.temperature = Math.round(data.temperature * 100) / 100;    
     this.updateDayHistory(data.temperature, data.humidity, data.pressure, data.creation_date);
+    
+    
+    const date1 = LocalDateFormater.formate(data.creation_date);
 
-    if(this.dayHistory.length > 0) {
-      let time1 = LocalDateFormater.formate(data.creation_date);  
-      let time2 = LocalDateFormater.formate(this.dayHistory[0].creation_date);
-      
-      this.dayHistory.push({
-        humidity: data.humidity + '',
-        temperature: data.temperature + '',
-        pressure: data.pressure + '',
-        creation_date: data.creation_date,
-        measure_id: '',
-      });
-
-      if(time1 === time2) {
-        this.dayHistory.shift();   
+    for(let i = 0; i < this.dayHistory.length; i++) {
+      const date2 = LocalDateFormater.formate(this.dayHistory[i].creation_date);
+      if(date1 === date2) {
+        this.dayHistory.splice(0, i + 1);
+        break;
       }
-      this.tc.buildChart(this.dayHistory, this.dayData);
-      this.hc.buildChart(this.dayHistory, this.dayData);  
-      this.pc.buildChart(this.dayHistory, this.dayData);
-    }  
+    }
+
+    this.dayHistory.push({
+      humidity: data.humidity + '',
+      temperature: data.temperature + '',
+      pressure: data.pressure + '',
+      creation_date: data.creation_date,
+      measure_id: '',
+    });
+
+    this.tc.buildChart(this.dayHistory, this.dayData);
+    this.hc.buildChart(this.dayHistory, this.dayData);  
+    this.pc.buildChart(this.dayHistory, this.dayData);
   }
 
   private updateDayHistory(dayTemp: number, dayHum: number, dayPre: number, date: string): void {
