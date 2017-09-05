@@ -106,11 +106,11 @@ export class DayHistory implements OnInit {
     data.temperature = Math.round(data.temperature * 100) / 100;    
     
     const date1 = LocalDateFormater.formate(data.creation_date);
-
+    
     for(let i = 0; i < this.dayHistory.length; i++) {
       const date2 = LocalDateFormater.formate(this.dayHistory[i].creation_date);
       if(date1 === date2) {
-        this.dayHistory.splice(0, i + 1);
+        const erasedData = this.dayHistory.splice(0, i + 1);
         break;
       }
     }
@@ -123,7 +123,7 @@ export class DayHistory implements OnInit {
       measure_id: '',
     });
 
-    this.updateDayHistory(data.temperature, data.humidity, data.pressure, data.creation_date);
+    this.initWeatherDayHistory(this.dayHistory);
 
     this.tc.buildChart(this.dayHistory, this.dayData);
     this.hc.buildChart(this.dayHistory, this.dayData);  
