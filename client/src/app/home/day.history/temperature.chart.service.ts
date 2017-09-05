@@ -65,7 +65,6 @@ export class TemperatureChart {
     datasets.push({
       label: 'Temperatura',
       data: data,
-      fill: true,
       pointBackgroundColor: pointsBackgroundColor,
       pointBorderColor: pointBorderColor,
       pointRadius: pointsRadius,
@@ -140,19 +139,9 @@ export class TemperatureChart {
     let tempChart = Chart.controllers.line.extend({
       draw: function(ease) {
         Chart.controllers.line.prototype.draw.call(this, ease);
-
-        // Now we can do some custom drawing for this dataset. Here we'll draw a red box around the first point in each dataset
-        var data = this.getMeta().data;
-
-        var ctx = this.chart.chart.ctx;
-
-
-        let p0 = data[50 - 1];
-        let p1 = data[50];
-        let p2 = data[51 - 1];
-        let p3 = data[51];
-        
-        ctx.save();       
+       
+        const data = this.getMeta().data;
+        const ctx = this.chart.chart.ctx;
         
         for(let i = 1; i < data.length; i++) {
           let p0 = data[i - 1];
@@ -166,7 +155,6 @@ export class TemperatureChart {
           ctx.stroke();
           ctx.closePath();
         }
-        ctx.restore();
       }      
   });
 

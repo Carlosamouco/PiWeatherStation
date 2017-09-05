@@ -53,7 +53,7 @@ export class HumidityChart {
     datasets.push({
       label: 'Humidade',
       data: data,
-      fill: true,
+      fill: false,
       pointBackgroundColor: 'rgb(0, 200, 255)',
       pointBorderColor: 'rgb(0, 50, 255)',
       pointRadius: pointsRadius,

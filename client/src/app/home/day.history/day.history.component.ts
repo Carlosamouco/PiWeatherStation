@@ -104,8 +104,6 @@ export class DayHistory implements OnInit {
     data.humidity = Math.round(data.humidity * 100) / 100;
     data.pressure = Math.round(data.pressure * 100) / 100;
     data.temperature = Math.round(data.temperature * 100) / 100;    
-    this.updateDayHistory(data.temperature, data.humidity, data.pressure, data.creation_date);
-    
     
     const date1 = LocalDateFormater.formate(data.creation_date);
 
@@ -124,6 +122,8 @@ export class DayHistory implements OnInit {
       creation_date: data.creation_date,
       measure_id: '',
     });
+
+    this.updateDayHistory(data.temperature, data.humidity, data.pressure, data.creation_date);
 
     this.tc.buildChart(this.dayHistory, this.dayData);
     this.hc.buildChart(this.dayHistory, this.dayData);  
