@@ -53,7 +53,7 @@ export class PressureChart {
     datasets.push({
       label: 'Pressão',
       data: data,
-      fill: true,
+      fill: false,
       pointBackgroundColor: '#333',
       pointBorderColor: '#000',
       pointRadius: pointsRadius,
