@@ -15,6 +15,10 @@ for i in range(0, 6):
     TEMPERATURE = sense.get_temperature_from_humidity()
     # TEMPERATURE2 = sense.get_temperature_from_pressure()
     PRESSURE = sense.get_pressure()
+    
+    if PRESSURE == 0:
+	PRESSURE = sense.get_pressure()
+
     HUMIDITY = sense.get_humidity()
 
     TEMPERATURE = round(TEMPERATURE, 2)
