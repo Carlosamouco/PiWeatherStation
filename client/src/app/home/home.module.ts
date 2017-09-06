@@ -8,6 +8,7 @@ import { TabsModule } from 'ngx-bootstrap';
 import { BsDropdownModule } from 'ngx-bootstrap';
 
 import { LiveWeatherSocket } from './services/socket.service';
+
 import { LiveWeather } from './live.weather/live.weather.component';
 import { DayHistory } from './day.history/day.history.component';
 import { Home } from './home.component';
@@ -27,6 +28,7 @@ import {  SkyconsCanvas } from './../skycons';
   ],
   providers: [
     LiveWeatherSocket
+    
   ],
 })
 export class HomeModule { }
