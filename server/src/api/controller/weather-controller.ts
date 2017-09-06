@@ -16,8 +16,13 @@ export class WeatherController {
   }
 
   static getByDate(req: express.Request, res: express.Response):void {
-    console.log('params: ', req.params.start, req.params.end)
     WeatherHistory.getByDate(req.params.start, req.params.end)
+      .then(result => res.status(200).json(result.rows))
+      .catch(error => res.status(400).json(error));
+  }
+
+  static getSummary(req: express.Request, res: express.Response):void {
+    WeatherHistory.getSummary()
       .then(result => res.status(200).json(result.rows))
       .catch(error => res.status(400).json(error));
   }
