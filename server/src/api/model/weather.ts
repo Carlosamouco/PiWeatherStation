@@ -27,27 +27,32 @@ export class WeatherHistory {
     }
     static getSummary() {
         return DBConfig.init().pool.query(
-            `
-            SELECT max_temp, min_temp, max_temp_date, min_temp_date, max_table.day  FROM
-            (
-                SELECT max_temp, creation_date as max_temp_date, date as day FROM "weather history"
-                JOIN
-                (
-                    SELECT max(temperature) as max_temp, DATE(creation_date) as date FROM "weather history" GROUP BY date
-                ) AS day_max_temp 
-                ON day_max_temp.date = DATE("weather history".creation_date) AND day_max_temp.max_temp = "weather history".temperature
-            ) AS max_table
-            LEFT JOIN
-            (
-                SELECT min_temp, creation_date as min_temp_date, date as day FROM "weather history"
-                JOIN
-                (
-                    SELECT min(temperature) as min_temp, DATE(creation_date) as date FROM "weather history" GROUP BY date
-                ) AS day_min_temp 
-                ON day_min_temp.date = DATE("weather history".creation_date) AND day_min_temp.min_temp = "weather history".temperature
-            ) AS min_table
-            ON max_table.day = min_table.day
-            `, 
-        []);
+            `SELECT 
+                min(temperature) as min_temp, 
+                max(temperature) as max_temp,
+                max(humidity) as max_hum,
+                min(humidity) as min_hum,
+                max(pressure) as max_pres,
+                min(pressure) as min_pres,
+                DATE(creation_date) as date 
+            FROM "weather history"
+            GROUP BY date`, []);
     }
 }
+
+/*
+SELECT  
+	DISTINCT ON (day) creation_date::timestamp::date as day
+	, first_value(creation_date) OVER www AS min_timestamp
+	, first_value(temperature) OVER www AS min_temperature
+	, last_value(creation_date) OVER www AS max_timestamp
+	, last_value(temperature) OVER www AS max_temperature
+FROM "weather history"
+
+WINDOW www AS 
+(
+    PARTITION BY creation_date::timestamp::date ORDER BY temperature, creation_date
+    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+);
+*/
+
