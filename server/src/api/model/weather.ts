@@ -40,7 +40,7 @@ export class WeatherHistory {
             ) AS max_temp
             FROM
             (
-                SELECT min(temperature) as min_temp, max(temperature) as max_temp, DATE(creation_date) as day FROM "weather history" GROUP BY day
+                SELECT min(temperature) as min_temp, max(temperature) as max_temp, creation_date::date as day FROM "weather history" GROUP BY day
             ) AS day_sum
             `, []);
     }
