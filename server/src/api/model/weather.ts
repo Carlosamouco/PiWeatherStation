@@ -39,7 +39,7 @@ export class WeatherHistory {
                     'value', max_temp,
                     'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE date = creation_date::date AND max_temp = temperature)
                     )
-                )
+                ) AS day_summary
             FROM
             (
                 SELECT min(temperature) as min_temp, max(temperature) as max_temp, DATE(creation_date) as date FROM "weather history" GROUP BY date
