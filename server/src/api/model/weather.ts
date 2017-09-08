@@ -29,18 +29,26 @@ export class WeatherHistory {
         return DBConfig.init().pool.query(
             `
             SELECT
-            day,
-            json_build_object(
+            day
+            ,json_build_object(
                 'value', min_temp,
                 'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::date AND min_temp = temperature)
-            ) AS min_temp,    
-            json_build_object(
+            ) AS min_temp
+            ,json_build_object(
                 'value', max_temp,
                 'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::date AND max_temp = temperature)
             ) AS max_temp
+            ,json_build_object(
+                'value', min_hum,
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::date AND min_hum = humidity)
+            ) AS min_hum
+            ,json_build_object(
+                'value', max_hum,
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::date AND max_hum = humidity)
+            ) AS max_hum
             FROM
             (
-                SELECT min(temperature) as min_temp, max(temperature) as max_temp, creation_date::date as day FROM "weather history" GROUP BY day
+                SELECT min(temperature) as min_temp, max(temperature) as max_temp, max(humidity) as max_hum, min(humidity) as min_hum, DATE(creation_date) as day FROM "weather history" GROUP BY day
             ) AS day_sum
             `, []);
     }
