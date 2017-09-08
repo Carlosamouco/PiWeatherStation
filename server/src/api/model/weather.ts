@@ -32,27 +32,27 @@ export class WeatherHistory {
             day
             ,json_build_object(
                 'value', min_temp,
-                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::date AND min_temp = temperature)
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::DATE AND min_temp = temperature)
             ) AS min_temp
             ,json_build_object(
                 'value', max_temp,
-                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::date AND max_temp = temperature)
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::DATE AND max_temp = temperature)
             ) AS max_temp
             ,json_build_object(
                 'value', min_hum,
-                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::date AND min_hum = humidity)
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::DATE AND min_hum = humidity)
             ) AS min_hum
             ,json_build_object(
                 'value', max_hum,
-                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::date AND max_hum = humidity)
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::DATE AND max_hum = humidity)
             ) AS max_hum
             ,json_build_object(
                 'value', min_hum,
-                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::date AND min_pres = pressure)
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::DATE AND min_pres = pressure)
             ) AS min_pres
             ,json_build_object(
                 'value', max_hum,
-                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::date AND max_pres = pressure)
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::DATE AND max_pres = pressure)
             ) AS max_pres
             FROM
             (
@@ -63,7 +63,7 @@ export class WeatherHistory {
                 ,min(humidity) AS min_hum
                 ,max(pressure) AS max_pres
                 ,min(pressure) AS min_pres
-                ,DATE(creation_date) AS day 
+                ,creation_date::DATE AS day 
                 FROM "weather history" GROUP BY day
             ) AS day_sum
             `, []);
