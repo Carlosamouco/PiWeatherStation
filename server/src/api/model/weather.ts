@@ -46,9 +46,25 @@ export class WeatherHistory {
                 'value', max_hum,
                 'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::date AND max_hum = humidity)
             ) AS max_hum
+            ,json_build_object(
+                'value', min_hum,
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::date AND min_pres = pressure)
+            ) AS min_pres
+            ,json_build_object(
+                'value', max_hum,
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::date AND max_pres = pressure)
+            ) AS max_pres
             FROM
             (
-                SELECT min(temperature) as min_temp, max(temperature) as max_temp, max(humidity) as max_hum, min(humidity) as min_hum, DATE(creation_date) as day FROM "weather history" GROUP BY day
+                SELECT 
+                min(temperature) AS min_temp
+                ,max(temperature) AS max_temp
+                ,max(humidity) AS max_hum
+                ,min(humidity) AS min_hum
+                ,max(pressure) AS max_pres
+                ,min(pressure) AS min_pres
+                ,DATE(creation_date) AS day 
+                FROM "weather history" GROUP BY day
             ) AS day_sum
             `, []);
     }
