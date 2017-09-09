@@ -4,7 +4,7 @@ import { WeatherHistory, Summary } from './../api/model/weather';
 export class DailySummaryJob {
   public static init() {
     const now = new Date();
-    new CronJob('00 00 00 * * *', () => this.checkDelayedDays(new Date()), null, true, 'Portugal');
+    new CronJob('00 00 00 * * *', () => this.checkDelayedDays(new Date()), null, true, 'Etc/UTC');
     this.checkDelayedDays(now);
   }
 
