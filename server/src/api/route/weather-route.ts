@@ -13,8 +13,13 @@ export class WeatherRoutes {
       router
         .route("/api/weather/:start/:end")
         .get(WeatherController.getByDate);
+
       router
-        .route("/api/summary/")
-        .get(WeatherController.getSummary);
+        .route("/api/summary/:start/:end")
+        .get(WeatherController.getDailySummary);
+
+      router
+        .route("/api/summary/:interval/:start/:end")
+        .get(WeatherController.getDetailedSummary);
     }
 }

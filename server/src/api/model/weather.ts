@@ -36,89 +36,62 @@ export class WeatherHistory {
             RETURNING temperature, pressure, humidity, creation_date
             `, [_measure.temperature, _measure.pressure, _measure.humidity, _measure.creation_date]);
     }
-
-    static addSummary(summary: Summary) {
-        return DBConfig.init().pool.query(`
-            INSERT INTO "daily summary" (avg_pressure, avg_humidity, avg_temperature, day) 
-            VALUES ($1, $2, $3, $4)
-            `, [summary.avg_pres, summary.avg_hum, summary.avg_temp, summary.day]);
-    }
-
-    static getLastSummary() {
-        return DBConfig.init().pool.query(`
-            SELECT day FROM "daily summary" ORDER BY day DESC LIMIT 1
-            `, []);
-    }
-
-
-    static getSummary() {
+    
+    static getDailySummary(start: string, end: string) {
         return DBConfig.init().pool.query(`
             SELECT
-            day_sum.day
-            ,json_build_object(
-                'min', json_build_object(
-                    'value', min_temp,
-                    'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND min_temp = temperature)
-                ),
-                'max', json_build_object(
-                    'value', max_temp,
-                    'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND max_temp = temperature)
-                ),
-                'avg', avg_temperature
+            creation_date::DATE AS day
+            , json_build_object(
+                'avg', ROUND(AVG(temperature), 2)
+                ,'max', MAX(temperature)
+                ,'min', MIN(temperature)
             ) AS temperature
-            ,json_build_object(
-                'min', json_build_object(
-                    'value', min_hum,
-                    'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND min_hum = humidity)
-                ),
-                'max', json_build_object(
-                    'value', max_hum,
-                    'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND max_hum = humidity)
-                ),
-                'avg', avg_humidity
+            , json_build_object(
+                'avg', ROUND(AVG(humidity), 2)
+                ,'max', MAX(humidity)
+                ,'min', MIN(humidity)
             ) AS humidity
-            ,json_build_object(
-                'min', json_build_object(
-                    'value', min_pres,
-                    'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND min_pres = pressure)
-                ),
-                'max', json_build_object(
-                    'value', max_pres,
-                    'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND max_pres = pressure)
-                ),
-                'avg', avg_pressure
+            , json_build_object(
+                'avg', ROUND(AVG(pressure), 2)
+                ,'max', MAX(pressure)
+                ,'min', MIN(pressure)
             ) AS pressure
-            FROM
-            (
-                SELECT 
-                min(temperature) AS min_temp
-                ,max(temperature) AS max_temp
-                ,max(humidity) AS max_hum
-                ,min(humidity) AS min_hum
-                ,max(pressure) AS max_pres
-                ,min(pressure) AS min_pres
-                ,creation_date::DATE AS day 
-                FROM public."weather history" GROUP BY day
-            ) AS day_sum
-            INNER JOIN public."daily summary"
-            ON day_sum.day = public."daily summary".day
-            `, []);
+            FROM "weather history"
+            WHERE creation_date BETWEEN $1 AND $2
+            GROUP BY day 
+            ORDER BY day ASC
+            `, [start, end]);
+    }
+
+    static getDetailedSummary(intterval: string, start: string, end: string) {
+        let int: number = parseFloat(intterval);
+        if(int === NaN) {
+            throw 'interval is not a number';
+        }
+
+        return DBConfig.init().pool.query(`
+            SELECT 
+            json_build_object(
+                'avg', ROUND(AVG(temperature), 2)
+                ,'max', MAX(temperature)
+                ,'min', MIN(temperature)
+            ) AS temperature
+            , json_build_object(
+                'avg', ROUND(AVG(humidity), 2)
+                ,'max', MAX(humidity)
+                ,'min', MIN(humidity)
+            ) AS humidity
+            , json_build_object(
+                'avg', ROUND(AVG(pressure), 2)
+                ,'max', MAX(pressure)
+                ,'min', MIN(pressure)
+            ) AS pressure,
+            to_timestamp(floor(extract('epoch' FROM creation_date) / $3 ) * $3) 
+                AT TIME ZONE 'UTC' as interval_alias
+            FROM "weather history"
+            WHERE creation_date BETWEEN $1 AND $2
+            GROUP BY interval_alias 
+            ORDER BY interval_alias ASC
+            `, [start, end, int]);
     }
 }
-
-/*
-SELECT  
-	DISTINCT ON (day) creation_date::timestamp::date as day
-	, first_value(creation_date) OVER www AS min_timestamp
-	, first_value(temperature) OVER www AS min_temperature
-	, last_value(creation_date) OVER www AS max_timestamp
-	, last_value(temperature) OVER www AS max_temperature
-FROM "weather history"
-
-WINDOW www AS 
-(
-    PARTITION BY creation_date::timestamp::date ORDER BY temperature, creation_date
-    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-);
-*/
-

@@ -13,14 +13,12 @@ import { DBConfig } from './config/db.conf';
 import { Routes } from './routes/index';
 import { Scheduler } from './python';
 import { SocketControler } from './socket.io'
-import { DailySummaryJob } from './cron/day.summary.job';
 
 const app = express();
 
 RoutesConfig.init(app);
 DBConfig.init();
 Routes.init(app, express.Router());
-DailySummaryJob.init();
 
 const server: express.Server = http.createServer(app).listen(PORT, () => {
         console.log(`up and running @: ${os.hostname()} on port: ${PORT}`);
