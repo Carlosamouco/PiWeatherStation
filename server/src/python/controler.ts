@@ -9,7 +9,6 @@ export default class PythonControler {
   private static RunPythonShell(script :string):Promise {
     const options = {
       mode: 'text',
-      //  pythonOptions: ['-u'],
       scriptPath: './src/python/scripts/',
       args: []
     };
@@ -46,23 +45,24 @@ export default class PythonControler {
   public static MakeMeasurement(): void {
     PythonControler.RunPythonShell('weather.py')
       .then(results => {
-        const data: Measure = PythonControler.ParseResults(results);
-        if(PythonControler.lastMeasure) {
-          data.risingTemp = (PythonControler.lastMeasure.temperature < data.temperature);
-          data.risingHum = (PythonControler.lastMeasure.humidity < data.humidity);
-          data.risingPres = (PythonControler.lastMeasure.pressure < data.pressure);
-        } 
-        else {
-          data.risingTemp = true;
-          data.risingHum = true;
-          data.risingPres = true;
-        }      
-        PythonControler.lastMeasure = data;
-
-        SocketControler.io.emit('new measurement', data);
-
-        WeatherHistory.addMeasure(data)
-          .then(() => console.log('[PythonControler] New measurement: ', data))
+        const measure: Measure = PythonControler.ParseResults(results);        
+        WeatherHistory.addMeasure(measure)
+          .then((res) => {
+            console.log('[PythonControler] New measurement: ', res.rows[0]);
+            let data = res.rows[0];
+            if(PythonControler.lastMeasure) {
+              data.risingTemp = (PythonControler.lastMeasure.temperature < data.temperature);
+              data.risingHum = (PythonControler.lastMeasure.humidity < data.humidity);
+              data.risingPres = (PythonControler.lastMeasure.pressure < data.pressure);
+            } 
+            else {
+              data.risingTemp = true;
+              data.risingHum = true;
+              data.risingPres = true;
+            }      
+            PythonControler.lastMeasure = data;    
+            SocketControler.io.emit('new measurement', data);
+          })
           .catch(e => setImmediate(() => { throw e }));          
       })
       .catch(e => setImmediate(() => { throw e }));

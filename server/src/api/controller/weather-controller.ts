@@ -1,6 +1,5 @@
 import * as express from "express";
 import { WeatherHistory } from "../model/weather";
-import * as Promise from "bluebird";
 
 export class WeatherController {
   static getAll(req: express.Request, res: express.Response): void {
@@ -23,9 +22,7 @@ export class WeatherController {
 
   static getSummary(req: express.Request, res: express.Response):void {
     WeatherHistory.getSummary()
-      .then(result => {   
-        res.status(200).json(result.rows);
-      })
+      .then(result => res.status(200).json(result.rows))
       .catch(error => res.status(400).json(error));
   }
 }

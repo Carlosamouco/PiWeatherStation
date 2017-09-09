@@ -5,7 +5,7 @@
 -- Dumped from database version 9.6.0
 -- Dumped by pg_dump version 9.6.0
 
--- Started on 2017-09-06 20:10:11
+-- Started on 2017-09-09 01:43:36
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -28,9 +28,9 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE "daily summary" (
-    mid_pressure numeric(7,2) NOT NULL,
-    mid_temperature numeric(5,2) NOT NULL,
-    mid_humidity numeric(5,2) NOT NULL,
+    avg_pressure numeric NOT NULL,
+    avg_temperature numeric NOT NULL,
+    avg_humidity numeric NOT NULL,
     day date NOT NULL,
     id bigint NOT NULL
 );
@@ -54,7 +54,7 @@ CREATE SEQUENCE "daily summary_id_seq"
 ALTER TABLE "daily summary_id_seq" OWNER TO postgres;
 
 --
--- TOC entry 2136 (class 0 OID 0)
+-- TOC entry 2137 (class 0 OID 0)
 -- Dependencies: 188
 -- Name: daily summary_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -94,7 +94,7 @@ CREATE SEQUENCE "weather history_measure_id_seq"
 ALTER TABLE "weather history_measure_id_seq" OWNER TO postgres;
 
 --
--- TOC entry 2137 (class 0 OID 0)
+-- TOC entry 2138 (class 0 OID 0)
 -- Dependencies: 185
 -- Name: weather history_measure_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -103,7 +103,7 @@ ALTER SEQUENCE "weather history_measure_id_seq" OWNED BY "weather history".measu
 
 
 --
--- TOC entry 2009 (class 2604 OID 50191)
+-- TOC entry 2010 (class 2604 OID 50191)
 -- Name: daily summary id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -111,7 +111,7 @@ ALTER TABLE ONLY "daily summary" ALTER COLUMN id SET DEFAULT nextval('"daily sum
 
 
 --
--- TOC entry 2007 (class 2604 OID 50172)
+-- TOC entry 2008 (class 2604 OID 50172)
 -- Name: weather history measure_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -119,16 +119,7 @@ ALTER TABLE ONLY "weather history" ALTER COLUMN measure_id SET DEFAULT nextval('
 
 
 --
--- TOC entry 2013 (class 2606 OID 50193)
--- Name: daily summary id; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY "daily summary"
-    ADD CONSTRAINT id PRIMARY KEY (id);
-
-
---
--- TOC entry 2011 (class 2606 OID 50174)
+-- TOC entry 2012 (class 2606 OID 50174)
 -- Name: weather history measure_id; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136,7 +127,16 @@ ALTER TABLE ONLY "weather history"
     ADD CONSTRAINT measure_id PRIMARY KEY (measure_id);
 
 
--- Completed on 2017-09-06 20:10:11
+--
+-- TOC entry 2014 (class 2606 OID 50193)
+-- Name: daily summary summary_id; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "daily summary"
+    ADD CONSTRAINT summary_id PRIMARY KEY (id);
+
+
+-- Completed on 2017-09-09 01:43:36
 
 --
 -- PostgreSQL database dump complete

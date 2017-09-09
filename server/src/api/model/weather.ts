@@ -7,10 +7,14 @@ export interface Measure {
     temperature: number;
     pressure: number;
     humidity: number;
-    risingTemp: Boolean;
-    risingPres: Boolean;
-    risingHum: Boolean;
     creation_date: string;
+}
+
+export interface Summary {
+    avg_temp: number;
+    avg_pres: number;
+    avg_hum: number;
+    day: string;
 }
 
 export class WeatherHistory {
@@ -18,42 +22,66 @@ export class WeatherHistory {
         return DBConfig.init().pool.query('SELECT * FROM "weather history"', []);
     }
 
-    static getByDate(start: Date, end: Date) {       
-        return DBConfig.init().pool.query('SELECT * from "weather history" WHERE creation_date >= $1 AND creation_date <= $2', [start, end]);
+    static getByDate(start: string, end: string) {       
+        return DBConfig.init().pool.query(`
+            SELECT * from "weather history" 
+            WHERE creation_date >= $1 AND creation_date <= $2
+            `, [start, end]);
     }
 
     static addMeasure(_measure: Measure) {       
-        return DBConfig.init().pool.query('INSERT INTO "weather history" (temperature, pressure, humidity, creation_date) VALUES ($1, $2, $3, $4)', [_measure.temperature, _measure.pressure, _measure.humidity, _measure.creation_date]);
+        return DBConfig.init().pool.query(`
+            INSERT INTO "weather history" (temperature, pressure, humidity, creation_date) 
+            VALUES ($1, $2, $3, $4)
+            RETURNING temperature, pressure, humidity, creation_date
+            `, [_measure.temperature, _measure.pressure, _measure.humidity, _measure.creation_date]);
     }
+
+    static addSummary(summary: Summary) {
+        return DBConfig.init().pool.query(`
+            INSERT INTO "daily summary" (avg_pressure, avg_humidity, avg_temperature, day) 
+            VALUES ($1, $2, $3, $4)
+            `, [summary.avg_pres, summary.avg_hum, summary.avg_temp, summary.day]);
+    }
+
+    static getLastSummary() {
+        return DBConfig.init().pool.query(`
+            SELECT day FROM "daily summary" ORDER BY day DESC LIMIT 1
+            `, []);
+    }
+
+
     static getSummary() {
-        return DBConfig.init().pool.query(
-            `
+        return DBConfig.init().pool.query(`
             SELECT
-            day
+            day_sum.day
             ,json_build_object(
                 'value', min_temp,
-                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::DATE AND min_temp = temperature)
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND min_temp = temperature)
             ) AS min_temp
             ,json_build_object(
                 'value', max_temp,
-                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::DATE AND max_temp = temperature)
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND max_temp = temperature)
             ) AS max_temp
             ,json_build_object(
                 'value', min_hum,
-                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::DATE AND min_hum = humidity)
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND min_hum = humidity)
             ) AS min_hum
             ,json_build_object(
                 'value', max_hum,
-                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::DATE AND max_hum = humidity)
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND max_hum = humidity)
             ) AS max_hum
             ,json_build_object(
                 'value', min_hum,
-                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::DATE AND min_pres = pressure)
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND min_pres = pressure)
             ) AS min_pres
             ,json_build_object(
                 'value', max_hum,
-                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day = creation_date::DATE AND max_pres = pressure)
+                'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND max_pres = pressure)
             ) AS max_pres
+            ,avg_temperature
+            ,avg_pressure
+            ,avg_humidity
             FROM
             (
                 SELECT 
@@ -64,8 +92,10 @@ export class WeatherHistory {
                 ,max(pressure) AS max_pres
                 ,min(pressure) AS min_pres
                 ,creation_date::DATE AS day 
-                FROM "weather history" GROUP BY day
+                FROM public."weather history" GROUP BY day
             ) AS day_sum
+            INNER JOIN public."daily summary"
+            ON day_sum.day = public."daily summary".day
             `, []);
     }
 }
