@@ -72,11 +72,11 @@ export class WeatherHistory {
                 'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND max_hum = humidity)
             ) AS max_hum
             ,json_build_object(
-                'value', min_hum,
+                'value', min_pres,
                 'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND min_pres = pressure)
             ) AS min_pres
             ,json_build_object(
-                'value', max_hum,
+                'value', max_pres,
                 'dates', ARRAY(SELECT creation_date FROM "weather history" WHERE day_sum.day = creation_date::date AND max_pres = pressure)
             ) AS max_pres
             ,avg_temperature
