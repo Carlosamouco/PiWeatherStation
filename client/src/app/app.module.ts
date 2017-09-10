@@ -3,12 +3,14 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
+import { SideNavBar } from './side.nav.bar/side.nav.bar.component';
 import { HomeModule } from './home';
 import { RoutesModule } from './routes.module';
 
 @NgModule({
   declarations: [
-    AppComponent  
+    AppComponent,
+    SideNavBar  
   ],
   imports: [
     BrowserModule,
