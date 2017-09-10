@@ -4,8 +4,7 @@
   display: inline-block;
   position: relative;
   font-weight: bold;
-  vertical-align: middle;
-  top: -20px;
+  top: -15px;
 }
 
 #weather-temp {
