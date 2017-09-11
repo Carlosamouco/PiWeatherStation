@@ -27,13 +27,13 @@
 .link > .arrow {
   position: absolute;
   right: 30px;
-  top: 13px;
+  top: 16px;
 }
 
 .nav-body .link-list > li {
   background: #744f80;
   padding: 5px 0;
-  padding: 10px 30px;
+  padding: 12px 30px;
   position: relative;
 }
 
@@ -46,6 +46,7 @@
   color: white;
   display: block;
   width: 100%;
+  font-size: 15px;
 }
 
 .nav-ctrl .icon-bar {
