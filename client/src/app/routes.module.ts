@@ -4,6 +4,7 @@ import { RouterModule, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot  } f
 import { HttpClient } from '@angular/common/http';
 
 import { Home } from './home';
+import { History } from './history';
 import { ForecastData } from './home/utils/forecast.types';
 
 
@@ -44,6 +45,10 @@ export class DayHistoryResolver implements Resolve<ForecastData[]> {
             forecastData: ForecastResolver,
             dayHistory: DayHistoryResolver
           }
+        },
+        { 
+          path: 'historico',
+          component: History,
         },
         /*
           {
