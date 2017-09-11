@@ -10,6 +10,44 @@
     min-height: 100vh;
 }
 
+.link > .icon {
+  margin-right: 10px;
+  font-size: 15px;
+}
+
+.nav-body {
+  overflow-y: auto;
+}
+
+.nav-body .link-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.link > .arrow {
+  position: absolute;
+  right: 30px;
+  top: 13px;
+}
+
+.nav-body .link-list > li {
+  background: #744f80;
+  padding: 5px 0;
+  padding: 10px 30px;
+  position: relative;
+}
+
+.nav-body .link-list > li.active {
+  background: #513b58;
+}
+
+.nav-body .link {  
+  text-decoration: none;
+  color: white;
+  display: block;
+  width: 100%;
+}
+
 .nav-ctrl .icon-bar {
   display: block;
   width: 22px;
@@ -53,10 +91,10 @@
 .nav-header h4 {
   margin: 0;
   color: rgb(228, 228, 228);
-  font-size: 20px;
+  font-size: 19px;
   position: absolute;
-  top: 19px;
-  left: 17px;
+  top: 23px;
+  left: 21px;
   font-weight: bold;
 }
 

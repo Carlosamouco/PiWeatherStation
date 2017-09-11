@@ -18,6 +18,7 @@ export class LiveWeatherSocket {
   private static instance: LiveWeatherSocket;
   private socket: SocketIOClient.Socket;
   private subsribers: Function[] = [];
+  private data;
 
   constructor () { 
     this.initSocket();
@@ -29,8 +30,13 @@ export class LiveWeatherSocket {
     });
     
     this.socket.on('new measurement', (data) => {
+      this.data = data;
       this.reportData(data);
     });
+  }
+
+  public getLastMeasure() {
+    return this.data;
   }
 
   public reportData(data: any) {

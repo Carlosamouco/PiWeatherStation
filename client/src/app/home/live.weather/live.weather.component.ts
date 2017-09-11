@@ -48,7 +48,7 @@ export class LiveWeather implements OnInit {
   public weather;  
 
   private tempLiveData: LiveData;
-
+  private socket: LiveWeatherSocket;
 
   constructor(socket: LiveWeatherSocket) {
     this.date = new Date().toLocaleString();
@@ -60,10 +60,16 @@ export class LiveWeather implements OnInit {
       }, 1000);
     }, upTime);    
     socket.subscribe(this.onDataRcv);
+    this.liveData = socket.getLastMeasure();
+    this.socket = socket;
   }
 
   ngOnInit() {
     this.initWeatherIcon();
+  }
+
+  ngOnDestroy() {
+    this.socket.unsubscribe(this.onDataRcv);
   }
 
   public onDataRcv: Function = (data: LiveData) => {    

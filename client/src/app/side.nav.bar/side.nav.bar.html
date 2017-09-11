@@ -1,12 +1,30 @@
 <aside class="nav-wrap ng-scope ps-container ps-active-y" [@hideNav]="state">
     <div class="nav-header">
-        <button type="button" class="btn nav-ctrl" (click)="navControler()" [@menuButton]="state">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button> 
-      <h4>Weather Station</h4>      
-    </div>    
+      <button type="button" class="btn nav-ctrl" (click)="navControler()" [@menuButton]="state">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button> 
+      <h4>Estado do Tempo</h4>
+    </div>
+    <div class="nav-body">
+      <ul class="link-list">
+        <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a class="link" routerLink="/" (click)="state ='minimized'">
+            <span class="glyphicon glyphicon-cloud icon" style="position: relative; top: 4px;" aria-hidden="true"></span>             
+            Tempo Atual
+            <span class="glyphicon glyphicon-menu-right arrow" aria-hidden="true"></span>
+          </a>
+        </li>
+        <li routerLinkActive="active" (click)="state ='minimized'">
+          <a class="link" routerLink="/historico">
+            <span class="glyphicon glyphicon-stats icon" aria-hidden="true"></span>
+            Sumário
+            <span class="glyphicon glyphicon-menu-right arrow" aria-hidden="true"></span>
+          </a>
+        </li>
+      </ul>
+    </div> 
 </aside>
 <div class="nav-bar-top"></div>
