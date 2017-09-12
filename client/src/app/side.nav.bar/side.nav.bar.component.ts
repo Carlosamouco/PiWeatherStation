@@ -4,8 +4,8 @@ import { trigger,  state,  style,  animate,  transition, AnimationEvent, keyfram
 @Component({
   selector: 'side-nav-bar',
   templateUrl: './side.nav.bar.html',
-  styleUrls: ['./side.nav.bar.css'],
-  animations: [
+  styleUrls: ['./side.nav.bar.css']
+  /*animations: [
     trigger('hideNav', [
       state('expanded', style({
         transform: 'translateX(0)'
@@ -22,8 +22,10 @@ import { trigger,  state,  style,  animate,  transition, AnimationEvent, keyfram
       state('minimized',   style({        
         transform: 'translate(35px, 7px)',
       })),
+      transition('expanded => minimized', animate('350ms')),
+      transition('minimized => expanded', animate('350ms'))
     ])
-  ]
+  ]*/
 })
 export class SideNavBar {
   public state: string = 'minimized';
@@ -35,5 +37,17 @@ export class SideNavBar {
     else {
       this.state = 'expanded';
     }
+  }
+
+  public getNavClass() {
+    if(this.state === 'expanded') {
+      return 'tranf-nav';
+    }
+  }
+
+  public getBtnClass() {
+    if(this.state === 'expanded') {
+      return 'tranf-btn';
+    }     
   }
 }

@@ -55,19 +55,20 @@
 
 .nav-wrap {
   background: #232429;
-  box-shadow: 2px 0px 60px #212225;
+  /*box-shadow: 2px 0px 60px #212225;*/
   z-index: 1000;
   width: 250px;
   position: fixed;
-  /*overflow-y: auto;*/
   top: 0;
+  left: -230px;
   min-height: 100vh;
   transition: transform 350ms
 }
 
 .btn.nav-ctrl {
   position: absolute;
-  right: 0;
+  right: -35px;
+  top: 7px;
   background-color: #1e8596;
   color: white;
   font-size: 20px;
@@ -75,7 +76,18 @@
   height: 44px;
   width: 44px;
   padding-left: 9px;
+  -webkit-transition: -webkit-transform 2s;
   transition: transform 350ms
+}
+
+.tranf-btn {
+  -webkit-transform: translate(-35px, -7px);
+  transform: translate(-35px, -7px);
+}
+
+.tranf-nav {
+  -webkit-transform: translateX(230px);
+  transform: translateX(230px);
 }
 
 .btn.nav-ctrl:focus {

@@ -1,6 +1,6 @@
-<aside class="nav-wrap ng-scope ps-container ps-active-y" [@hideNav]="state">
+<aside class="nav-wrap ng-scope ps-container ps-active-y" [ngClass]="getNavClass()">
     <div class="nav-header">
-      <button type="button" class="btn nav-ctrl" (click)="navControler()" [@menuButton]="state">
+      <button type="button" class="btn nav-ctrl" (click)="navControler()" [ngClass]="getBtnClass()">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
