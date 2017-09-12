@@ -56,10 +56,11 @@ export class DayHistory implements OnInit {
     this.hc = new HumidityChart(this.humChart.nativeElement, this.chartsBuilder)
 
     this.chartsBuilder.buildLabels(this.dayHistory, this.dayData);
-
-    this.tc.buildChart();   
+  
+    this.tc.buildChart(); 
     this.hc.buildChart();  
-    this.pc.buildChart();  
+    this.pc.buildChart();
+    
   }
 
   public formateDate(date: any[]): string{

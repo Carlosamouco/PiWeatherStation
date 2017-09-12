@@ -53,14 +53,7 @@ export class TemperatureChart {
       options: {
           tooltips: {
             mode: 'nearest',
-            intersect: false,
-            callbacks:{
-              title:function(point, data){
-                const datasetIndex = point[0].datasetIndex;
-                const index = point[0].index;
-                return data.datasets[datasetIndex].data[index].x;
-              }
-            }
+            intersect: false
           },
           showLines: false,
           animation: {
@@ -77,11 +70,6 @@ export class TemperatureChart {
           },
           legend: {
             display: false,
-          },
-          elements: {
-            line: {
-              tension: 0
-            }
           },
           scales: {
             xAxes: [{
