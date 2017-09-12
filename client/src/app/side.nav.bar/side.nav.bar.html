@@ -11,7 +11,7 @@
     <div class="nav-body">
       <ul class="link-list">
         <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a class="link" routerLink="/">
+          <a class="link" routerLink="/" (click)="state ='minimized'">
             <span class="glyphicon glyphicon-cloud icon" style="position: relative; top: 4px;" aria-hidden="true"></span>             
             Tempo Atual
             <span class="glyphicon glyphicon-menu-right arrow" aria-hidden="true"></span>

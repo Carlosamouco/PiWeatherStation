@@ -14,8 +14,6 @@ import { trigger,  state,  style,  animate,  transition, AnimationEvent, keyfram
         transform: 'translateX(-230px)',
         'box-shadow': 'none'
       })),
-      transition('expanded => minimized', animate('350ms ease-in')),
-      transition('minimized => expanded', animate('350ms ease-out'))
     ]),
     trigger('menuButton', [
       state('expanded', style({
@@ -24,8 +22,6 @@ import { trigger,  state,  style,  animate,  transition, AnimationEvent, keyfram
       state('minimized',   style({        
         transform: 'translate(35px, 7px)',
       })),
-      transition('expanded => minimized', animate('350ms')),
-      transition('minimized => expanded', animate('350ms'))
     ])
   ]
 })
