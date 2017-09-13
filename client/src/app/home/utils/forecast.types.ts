@@ -1,4 +1,4 @@
-export interface HistoryData {
+export interface DayHistoryData {
   creation_date: string,
   humidity: string,
   measure_id: string,

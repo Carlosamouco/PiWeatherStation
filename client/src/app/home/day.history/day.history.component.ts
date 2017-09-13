@@ -3,12 +3,12 @@ import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
 import Chart from 'chart.js';
 
 import { LiveWeatherSocket, LiveData } from './../services/socket.service';
-import { HistoryData, ParamData, DayData } from './../utils/forecast.types';
-import { TemperatureChart } from './temperature.chart';
-import { HumidityChart } from './humidity.chart';
-import { PressureChart } from './pressure.chart';
+import { DayHistoryData, ParamData, DayData } from './../utils/forecast.types';
+import { TemperatureChart } from './../../charts/temperature.chart';
+import { HumidityChart } from './../../charts/humidity.chart';
+import { PressureChart } from './../../charts/pressure.chart';
 import { LocalDateFormater } from './../utils/localdateformater';
-import { ChartsBuilder } from './chart.service';
+import { DayHistoryChartsBuilder } from './chart.service';
 
 @Component({
   selector: 'day-history',
@@ -17,7 +17,7 @@ import { ChartsBuilder } from './chart.service';
 })
 
 export class DayHistory implements OnInit {
-  @Input() dayHistory: HistoryData[];
+  @Input() dayHistory: DayHistoryData[];
 
   @ViewChild('tempChart') tempChart: ElementRef;
   @ViewChild('humChart') humChart: ElementRef;
@@ -27,12 +27,11 @@ export class DayHistory implements OnInit {
   private hc: HumidityChart;
   private pc: PressureChart;
   private dataReceived = false;
-  private chartsBuilder: ChartsBuilder; 
+  private chartsBuilder: DayHistoryChartsBuilder; 
   public dayData: DayData;
   
   constructor(socket: LiveWeatherSocket) { 
     socket.subscribe(this.onDataRcv);
-    this.chartsBuilder = new ChartsBuilder();
   }
 
   public ngOnInit() {
@@ -50,23 +49,20 @@ export class DayHistory implements OnInit {
   }
 
   public ngAfterViewInit() {
-
+    this.chartsBuilder = new DayHistoryChartsBuilder(this.dayHistory, this.dayData);
+    
     this.tc = new TemperatureChart(this.tempChart.nativeElement, this.chartsBuilder);
     this.pc = new PressureChart(this.presChart.nativeElement, this.chartsBuilder)
     this.hc = new HumidityChart(this.humChart.nativeElement, this.chartsBuilder)
 
-    this.chartsBuilder.buildLabels(this.dayHistory, this.dayData);
-  
+    this.chartsBuilder.buildLabels();  
     this.tc.buildChart(); 
     this.hc.buildChart();  
     this.pc.buildChart();
-    
   }
 
   public formateDate(date: any[]): string{
-
     let res = '';
-
     for(let i = 0; i < date.length; i++) {
       let time: string = new Date(date[i].date).toLocaleTimeString();     
       res += time.substring(0, time.length - 3)
@@ -79,7 +75,7 @@ export class DayHistory implements OnInit {
     return res;
   }
 
-  private updateWeatherDayHistory(data: HistoryData[]): void {
+  private updateWeatherDayHistory(data: DayHistoryData[]): void {
     this.dayData = {
       temperature: { max: [], min: [] },
       humidity: { max: [], min: [] },
@@ -133,7 +129,7 @@ export class DayHistory implements OnInit {
 
     this.updateWeatherDayHistory(this.dayHistory);
 
-    this.chartsBuilder.buildLabels(this.dayHistory, this.dayData);
+    this.chartsBuilder.buildLabels();
 
     this.tc.buildChart();
     this.hc.buildChart();  

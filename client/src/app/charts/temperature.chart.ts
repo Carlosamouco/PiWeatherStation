@@ -1,8 +1,6 @@
 import Chart from 'chart.js';
 
-import { HistoryData, ParamData, DayData } from './../utils/forecast.types';
-import { LocalDateFormater } from './../utils/localdateformater';
-import { ChartsBuilder } from './chart.service';
+import { ChartsBuilder } from './charts.builder';
 
 export class TemperatureChart {
   private ctx: HTMLCanvasElement;
@@ -15,7 +13,7 @@ export class TemperatureChart {
   }
 
   public buildChart() {
-    let lineColors = this.tempBuilder.tempLineColor;
+    let lineColors = this.tempBuilder.getTempLineColors();
 
     Chart.defaults.temperatureChart = Chart.defaults.line;
     
@@ -47,8 +45,8 @@ export class TemperatureChart {
       this.chart = new Chart(this.ctx, {
       type: 'temperatureChart',
       data: {
-          labels:  this.tempBuilder.labels,
-          datasets:  this.tempBuilder.tempDatasets,
+          labels:  this.tempBuilder.getLabels(),
+          datasets:  this.tempBuilder.getTempDatasets(),
       },
       options: {
           tooltips: {
@@ -65,7 +63,7 @@ export class TemperatureChart {
             animationDuration: 0,
           },
           title: {
-            text: 'Variação da temperatura nas últimas 24 horas',
+            text: 'Variação da temperatura',
             display: true,
           },
           legend: {
@@ -82,8 +80,8 @@ export class TemperatureChart {
       });
     }
     else {
-      this.chart.data.labels = this.tempBuilder.labels;
-      this.chart.data.datasets = this.tempBuilder.tempDatasets;
+      this.chart.data.labels = this.tempBuilder.getLabels();
+      this.chart.data.datasets = this.tempBuilder.getTempDatasets();
       this.chart.update();
     }
   }

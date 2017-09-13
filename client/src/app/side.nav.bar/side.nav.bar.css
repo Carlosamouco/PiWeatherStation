@@ -55,7 +55,6 @@
 
 .nav-wrap {
   background: #232429;
-  /*box-shadow: 2px 0px 60px #212225;*/
   z-index: 1000;
   width: 250px;
   position: fixed;
@@ -88,6 +87,7 @@
 .tranf-nav {
   -webkit-transform: translateX(230px);
   transform: translateX(230px);
+  box-shadow: 2px 0px 60px #212225;
 }
 
 .btn.nav-ctrl:focus {

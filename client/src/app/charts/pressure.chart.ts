@@ -1,8 +1,6 @@
 import Chart from 'chart.js';
 
-import { HistoryData, ParamData, DayData } from './../utils/forecast.types';
-import { LocalDateFormater } from './../utils/localdateformater';
-import { ChartsBuilder } from './chart.service';
+import { ChartsBuilder } from './charts.builder';
 
 export class PressureChart {
   private ctx: HTMLCanvasElement;
@@ -19,8 +17,8 @@ export class PressureChart {
       this.chart = new Chart(this.ctx, {
         type: 'line',
         data: {
-            labels: this.presBuilder.labels,
-            datasets: this.presBuilder.presDatasets,
+            labels: this.presBuilder.getLabels(),
+            datasets: this.presBuilder.getPresDatasets(),
         },
         options: {
             tooltips: {
@@ -36,7 +34,7 @@ export class PressureChart {
               animationDuration: 0,
             },
             title: {
-              text: 'Variação da pressão nas últimas 24 horas',
+              text: 'Variação da pressão',
               display: true,
             },
             legend: {
@@ -58,8 +56,8 @@ export class PressureChart {
       });
     }
     else {
-      this.chart.data.labels = this.presBuilder.labels;
-      this.chart.data.datasets = this.presBuilder.presDatasets;
+      this.chart.data.labels = this.presBuilder.getLabels();
+      this.chart.data.datasets = this.presBuilder.getPresDatasets();
       this.chart.update();
     }
   }
