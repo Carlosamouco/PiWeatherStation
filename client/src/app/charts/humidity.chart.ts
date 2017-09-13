@@ -1,8 +1,6 @@
 import Chart from 'chart.js';
 
-import { HistoryData, ParamData, DayData } from './../utils/forecast.types';
-import { LocalDateFormater } from './../utils/localdateformater';
-import { ChartsBuilder } from './chart.service';
+import { ChartsBuilder } from './charts.builder';
 
 export class HumidityChart {
   private ctx: HTMLCanvasElement;
@@ -19,8 +17,8 @@ export class HumidityChart {
       this.chart = new Chart(this.ctx, {
         type: 'line',
         data: {
-          labels: this.humBuilder.labels,
-          datasets: this.humBuilder.humDatasets,
+          labels: this.humBuilder.getLabels(),
+          datasets: this.humBuilder.getHumDatasets(),
         },
         options: {
           tooltips: {
@@ -36,7 +34,7 @@ export class HumidityChart {
             animationDuration: 0,
           },
           title: {
-            text: 'Variação da humidade nas últimas 24 horas',
+            text: 'Variação da humidade',
             display: true,
           },
           legend: {
@@ -54,8 +52,8 @@ export class HumidityChart {
       });
     }
     else {
-      this.chart.data.labels = this.humBuilder.labels;
-      this.chart.data.datasets = this.humBuilder.humDatasets;
+      this.chart.data.labels = this.humBuilder.getLabels();
+      this.chart.data.datasets = this.humBuilder.getHumDatasets();
       this.chart.update();
     }
   }

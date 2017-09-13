@@ -1,0 +1,29 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12" style="padding-bottom: 10px; border-bottom: solid #1e8596">
+      <h2>Sumário</h2>
+      <h4>Selecione as datas a visualizar</h4>
+      <form (ngSubmit)="submit(historyForm.form)" #historyForm="ngForm">
+        <div class="form-group">
+          <label for="iDate">Data Inicial</label>
+          <input type="datetime-local" class="form-control" id="iDate" [ngClass]="datesAsArray()" name="idaytime" [(ngModel)]="iDate" required> 
+        </div>
+        <div class="form-group">
+          <label for="eDate">Data de Fim</label>
+          <input type="datetime-local" class="form-control" id="eDate" [ngClass]="datesAsArray()" name="edaytime" [(ngModel)]="eDate" required>
+        </div>
+        <div class="form-group">
+          <label for="interval">Intervalo de Tempo</label>
+          <input type="time" class="form-control"  id="interval" name="interval" ngModel required>
+          <p class="help-block">Periodo de tempo entre resultados. Selecione '00:00' para uma vista diária. </p>
+        </div>
+        <button type="submit" class="btn btn-default" [disabled]="!isFormValid(historyForm.form)">Submeter</button>
+      </form>
+    </div>
+  </div>
+  <div class="row">
+      <div class="col-md-12" style="padding-top: 10px">
+        <history-charts #charts></history-charts>
+      </div>
+  </div>
+</div>

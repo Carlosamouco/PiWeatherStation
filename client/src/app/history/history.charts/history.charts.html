@@ -1,0 +1,14 @@
+<tabset>
+  <tab heading="Temperatura">
+    <h3 *ngIf="!hasData" class="na-title">Sem informação disponível</h3>
+    <canvas [ngClass]="displayCanvas()" #tempChart width="100" height="60"></canvas>   
+  </tab>
+  <tab heading="Humidade">
+    <h3 *ngIf="!hasData" class="na-title">Sem informação disponível</h3>
+    <canvas [ngClass]="displayCanvas()" #humChart width="100" height="60"></canvas>
+  </tab>
+  <tab heading="Pressão">
+    <h3 *ngIf="!hasData" class="na-title">Sem informação disponível</h3>
+    <canvas [ngClass]="displayCanvas()" #presChart width="100" height="60"></canvas>
+  </tab>
+</tabset>
