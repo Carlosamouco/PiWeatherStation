@@ -46,7 +46,8 @@ export class HistoryChartsBuilder extends ChartsBuilder {
     const mn = date.getMinutes();
 
 
-    return m + '/' + d + ' ' + h + ':' + mn;
+    return  (m < 10 ? '0' + m : m) + '/' + (d < 10 ? '0' + d : d) + ' '
+            + (h < 10 ? '0' + h : h) + ':' + (mn < 10 ? '0' + mn : mn);
   }
 
   public buildLabels() {
