@@ -67,15 +67,15 @@ export class History {
   public submit(form) {
     const interval = form.value.interval;
     const s = interval.split(':');
-    const seconds = parseInt(s[0]) * 3600 + parseInt(s[1]) * 60;
-    let url;
+    let seconds = parseInt(s[0]) * 3600 + parseInt(s[1]) * 60;
     if(seconds === 0) {
-      url = `${form.value.idaytime}/${form.value.edaytime}`;
+      seconds = 24*3600;
     }
-    else {
-      url = `${seconds}/${form.value.idaytime}/${form.value.edaytime}`;      
-    }
-    this.http.get<WeatherHistory[]>(`/api/summary/${url}`).subscribe(data => {
+
+    let iDate = new Date(form.value.idaytime).toISOString();
+    let eDate = new Date(form.value.edaytime).toISOString()
+
+    this.http.get<WeatherHistory[]>(`/api/summary/${seconds}/${iDate}/${eDate}`).subscribe(data => {
       this.charts.buildCharts(data)
     });
   }
