@@ -40,7 +40,7 @@ export class HistoryChartsBuilder extends ChartsBuilder {
   }
 
   private formatDate(date: Date): string {
-    const m = date.getMonth() + 1;
+    const m = date.getMonth() + 1; 
     const d = date.getDate();
     const h = date.getHours();
     const mn = date.getMinutes();
