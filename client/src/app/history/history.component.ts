@@ -74,7 +74,7 @@ export class History {
     if(/^(0[1-9]|[1-2]\d|3[0-1])\/(1[0-2]|0[1-9])\/([1-9]\d{0,5}|0{1,5}1)[ ]*(\d{2}:\d{2})?$/.test(date)) {
       const r = date.split(' ');
       const d = r[0].split('/');
-      return d[2] + '-' + d[1] + '-' + d[0] + (r.length > 1? 'T' + r[1] : '');
+      return d[2] + '-' + d[1] + '-' + d[0] + 'T' + (r.length > 1? r[1] : '00:00');
     }
   }
 
