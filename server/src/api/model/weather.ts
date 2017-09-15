@@ -63,11 +63,20 @@ export class WeatherHistory {
             `, [start, end]);
     }
 
-    static getDetailedSummary(intterval: string, start: string, end: string) {
-        let int: number = parseFloat(intterval);
-        if(int === NaN) {
-            throw 'interval is not a number';
+    static getDetailedSummary(interval: string, offset: string, start: string, end: string) {
+        let off: number = parseFloat(offset);
+        if(isNaN(off)) {
+            throw 'offset is not a number';
         }
+
+        let sig = '-';
+
+        if(off < 0) {
+            sig = '+';
+        }
+
+        const h = Math.floor(Math.abs(off) / 60);
+        const m = Math.abs(off) % 60;
 
         return DBConfig.init().pool.query(`
             SELECT 
@@ -86,12 +95,17 @@ export class WeatherHistory {
                 ,'max', MAX(pressure)
                 ,'min', MIN(pressure)
             ) AS pressure,
-            to_timestamp(floor(extract('epoch' FROM creation_date) / $3 ) * $3) 
-                AT TIME ZONE 'UTC' as interval_alias
+            to_timestamp(
+                floor(
+                    extract(
+                        'epoch' FROM creation_date ${sig} '${h} hours'::interval ${sig} '${m} minutes'::interval 
+                    ) / $3 
+                ) * $3
+            ) as interval_alias
             FROM "weather history"
             WHERE creation_date BETWEEN $1 AND $2
             GROUP BY interval_alias 
             ORDER BY interval_alias ASC
-            `, [start, end, int]);
+            `, [start, end, interval]);
     }
 }

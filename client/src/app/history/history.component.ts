@@ -104,18 +104,21 @@ export class History {
   }
 
   public submit(form) {
+
     const interval = form.value.interval;
     const s = interval.split(':');
     let seconds = parseInt(s[0]) * 3600 + parseInt(s[1]) * 60;
+
     if(seconds === 0) {
       seconds = 24*3600;
     }
 
+    const offset = new Date().getTimezoneOffset();    
     let iDate = new Date(this.id).toISOString();
     let eDate = new Date(this.ed).toISOString();
     
-    this.http.get<WeatherHistory[]>(`/api/summary/${seconds}/${iDate}/${eDate}`).subscribe(data => {
-      this.charts.buildCharts(data)
+    this.http.get<WeatherHistory[]>(`/api/summary/${seconds}/${offset}/${iDate}/${eDate}`).subscribe(data => {
+      this.charts.buildCharts(data);
     });
   }
 }

@@ -19,7 +19,7 @@ export class WeatherRoutes {
         .get(WeatherController.getDailySummary);
 
       router
-        .route("/api/summary/:interval/:start/:end")
+        .route("/api/summary/:interval/:offset/:start/:end")
         .get(WeatherController.getDetailedSummary);
     }
 }
