@@ -1,34 +1,18 @@
-import { ChartsBuilder, LineColor } from './../../charts/charts.builder';
+import { ChartsBuilder } from './../../charts/charts.builder';
 import { WeatherHistory } from './../history.component';
 
 export class HistoryChartsBuilder extends ChartsBuilder {
 
-  public humDatasets: any[];
-  public presDatasets: any[];
-  public tempDatasets: any[];
+  public datasets;
 
   public labels: string[];
-
-  public tempLineColor: LineColor[];
 
   constructor(private hData: WeatherHistory[]) {
     super();
   }
 
-  public getTempDatasets(): any[] {
-    return this.tempDatasets;
-  }
-
-  public getPresDatasets(): any[] {
-    return this.presDatasets;
-  }
-
-  public getHumDatasets(): any[] {
-    return this.humDatasets;
-  }
-
-  public getTempLineColors(): LineColor[] {
-    return this.tempLineColor;
+  public getDatasets(): any[] {
+    return this.datasets;
   }
 
   public getLabels(): string[] {
@@ -50,59 +34,130 @@ export class HistoryChartsBuilder extends ChartsBuilder {
             + (h < 10 ? '0' + h : h) + ':' + (mn < 10 ? '0' + mn : mn);
   }
 
-  public buildLabels() {
-    let humData = [];
-    let presData = [];
-    let tempData = [];
+  public build() {
+    let avgHum = [];
+    let avgPres = [];
+    let avgTemp = [];
+
+    let minHum = [];
+    let minPres = [];
+    let minTemp = [];
+    
+    let maxHum = [];
+    let maxPres = [];
+    let maxTemp = [];
 
     let pointsBackgroundColor: string[] = [];
     let pointBorderColor: string[] = [];
 
     this.labels = [];
-    this.tempLineColor = [];
 
     for(let i = 0; i < this.hData.length; i++) {
       let time = this.formatDate(new Date(this.hData[i].interval_alias));
       this.labels.push(time);
-      humData.push({ y: this.hData[i].humidity.avg, x: time });
-      presData.push({ y: this.hData[i].pressure.avg, x: time });
-      tempData.push({ y: this.hData[i].temperature.avg, x: time });
-      
-      const c = this.calcColor(tempData[i].y);
-      pointsBackgroundColor.push(this.RGBAtoRGB(c.color.r, c.color.g, c.color.b, 0.7));
-      pointBorderColor.push(c.rgb);
+      avgHum.push({ y: this.hData[i].humidity.avg, x: time });
+      avgPres.push({ y: this.hData[i].pressure.avg, x: time });
+      avgTemp.push({ y: this.hData[i].temperature.avg, x: time });
 
-      if(i > 0) {
-        this.tempLineColor.push(this.calcColor((tempData[i].y + tempData[i - 1].y) / 2));
-      }
+      minHum.push({ y: this.hData[i].humidity.min, x: time });
+      minPres.push({ y: this.hData[i].pressure.min, x: time });
+      minTemp.push({ y: this.hData[i].temperature.min, x: time });
+
+      maxHum.push({ y: this.hData[i].humidity.max, x: time });
+      maxPres.push({ y: this.hData[i].pressure.max, x: time });
+      maxTemp.push({ y: this.hData[i].temperature.max, x: time }); 
     }
       
-    this.humDatasets = [{
-      label: 'Humidade',
-      data: humData,
+    this.datasets.humidity = [      
+    {
+      label: 'Humidade Mín.',
+      data: minHum,
       fill: false,
-      pointBackgroundColor: 'rgb(0, 200, 255)',
-      pointBorderColor: 'rgb(0, 50, 255)',
+      hidden: true,
+      pointBackgroundColor: '#457cfc',
+      pointBorderColor: '#457cfc',
       pointRadius: 0,
-      borderColor: 'rgb(53, 72, 109)',
+      borderColor: '#457cfc',
+    },
+    {
+      label: 'Humidade Média',
+      data: avgHum,
+      fill: false,
+      pointBackgroundColor: '#3bff5d',
+      pointBorderColor: '#3bff5d',
+      pointRadius: 0,
+      borderColor: '#3bff5d',
+    },
+    {
+      label: 'Humidade Máx.',
+      data: maxHum,
+      fill: false,
+      hidden: true,
+      pointBackgroundColor: '#f84040',
+      pointBorderColor: '#f84040',
+      pointRadius: 0,
+      borderColor: '#f84040',
     }];
 
-    this.presDatasets = [{
-      label: 'Pressão',
-      data: presData,
+    this.datasets.pressure = [
+      {
+        label: 'Pressão Mín.',
+        data: minPres,
+        fill: false,
+        hidden: true,
+        pointBackgroundColor: '#457cfc',
+        pointBorderColor: '#457cfc',
+        pointRadius: 0,
+        borderColor: '#457cfc',
+      },
+      {
+      label: 'Pressão Média',
+      data: avgPres,
       fill: false,
-      pointBackgroundColor: '#333',
-      pointBorderColor: '#000',
+      pointBackgroundColor: '#3bff5d',
+      pointBorderColor: '#3bff5d',
       pointRadius: 0,
-      borderColor: '#666',
+      borderColor: '#3bff5d',
+    },
+    {
+      label: 'Pressão Máx.',
+      data: maxPres,
+      fill: false,
+      hidden: true,
+      pointBackgroundColor: '#f84040',
+      pointBorderColor: '#f84040',
+      pointRadius: 0,
+      borderColor: '#f84040',
     }];
 
-    this.tempDatasets = [{
-      label: 'Temperatura',
-      data: tempData,
-      pointBackgroundColor: pointsBackgroundColor,
-      pointBorderColor: pointBorderColor,
+    this.datasets.temperature = [{
+      label: 'Temperatura Mín.',
+      data: minTemp,
+      fill: false,
+      hidden: true,
+      pointBackgroundColor: '#457cfc',
+      pointBorderColor: '#457cfc',
       pointRadius: 0,
+      borderColor: '#457cfc',
+    },
+    {
+      label: 'Temperatura Média',
+      data: avgTemp,
+      fill: false,
+      pointBackgroundColor: '#3bff5d',
+      pointBorderColor: '#3bff5d',
+      pointRadius: 0,
+      borderColor: '#3bff5d',
+    },
+    {
+      label: 'Temperatura Máx.',
+      data: maxTemp,
+      fill: false,
+      hidden: true,
+      pointBackgroundColor: '#f84040',
+      pointBorderColor: '#f84040',
+      pointRadius: 0,
+      borderColor: '#f84040',
     }];
   }
 }

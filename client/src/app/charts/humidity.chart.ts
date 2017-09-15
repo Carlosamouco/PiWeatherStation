@@ -1,60 +1,45 @@
 import Chart from 'chart.js';
 
 import { ChartsBuilder } from './charts.builder';
+import { ChartFactory } from './chart';
 
-export class HumidityChart {
-  private ctx: HTMLCanvasElement;
-  private chart: Chart;
-  private humBuilder: ChartsBuilder;
-  
-  public constructor(ctx: HTMLCanvasElement, humBuilder: ChartsBuilder) {  
-    this.ctx = ctx;
-    this.humBuilder = humBuilder;
+export class HumidityChart extends ChartFactory {  
+  public constructor(ctx: HTMLCanvasElement, builder: ChartsBuilder) { 
+    super(ctx, builder);
   }
 
-  public buildChart() {
-    if(!this.chart) {
-      this.chart = new Chart(this.ctx, {
-        type: 'line',
-        data: {
-          labels: this.humBuilder.getLabels(),
-          datasets: this.humBuilder.getHumDatasets(),
+  public buildChart(chartType: string = 'line', chartOptions?: any) {
+    if(!chartOptions) {
+      chartOptions = {
+        tooltips: {
+          mode: 'nearest',
+          intersect: false
         },
-        options: {
-          tooltips: {
-            mode: 'nearest',
-            intersect: false,
-          },
-          animation: {
-            duration: 0,
-          },
-          hover: {
-            mode: 'nearest',
-            intersect: false,
-            animationDuration: 0,
-          },
-          title: {
-            text: 'Variação da humidade',
-            display: true,
-          },
-          legend: {
-            display: false,
-          },
-          elements: {
-            line: {
-              tension: 0
-            }
-          },
-          responsive: true,
-          maintainAspectRatio: true,
-          responsiveAnimationDuration: 0,
-        }
-      });
+        showLines: true,
+        animation: {
+          duration: 0,
+        },
+        hover: {
+          mode: 'nearest',
+          intersect: false,
+          animationDuration: 0,
+        },
+        title: {
+          text: 'Variação da humidade',
+          display: true,
+        },
+        legend: {
+          display: false,
+        },
+        scales: {
+          xAxes: [{
+              type: 'category',
+          }]},
+        responsive: true,
+        maintainAspectRatio: true,
+        responsiveAnimationDuration: 0,
+      }
     }
-    else {
-      this.chart.data.labels = this.humBuilder.getLabels();
-      this.chart.data.datasets = this.humBuilder.getHumDatasets();
-      this.chart.update();
-    }
+    super.build(chartType, chartOptions, this.builder.getDatasets().humidity);
   }
 }

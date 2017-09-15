@@ -1,42 +1,15 @@
-import { DayHistoryData, ParamData, DayData } from './../utils/forecast.types';
-import { LocalDateFormater } from './../utils/localdateformater';
-import { ChartsBuilder, LineColor } from './../../charts/charts.builder';
+import { DayHistoryData, ParamData, DayData } from './../../utils/forecast.types';
+import { ChartsBuilder } from './../../../charts/charts.builder';
+import { GradientUtils, LineColor } from './gradient.utils';
+import { DateFormater } from './../date.formater';
 
 export class DayHistoryChartsBuilder extends ChartsBuilder {
-
-  public humDatasets: any[];
-  public presDatasets: any[];
-  public tempDatasets: any[];
-
-  public labels: string[];
-
-  public tempLineColor: LineColor[];
 
   constructor(private hData: DayHistoryData[], private day: DayData) {
     super();
   }
 
-  public getTempDatasets(): any[] {
-    return this.tempDatasets;
-  }
-
-  public getPresDatasets(): any[] {
-    return this.presDatasets;
-  }
-
-  public getHumDatasets(): any[] {
-    return this.humDatasets;
-  }
-
-  public getTempLineColors(): LineColor[] {
-    return this.tempLineColor;
-  }
-
-  public getLabels(): string[] {
-    return this.labels;
-  }
-
-  public buildLabels() {
+  public build() {
     let humData = [];
     let presData = [];
     let tempData = [];
@@ -49,10 +22,9 @@ export class DayHistoryChartsBuilder extends ChartsBuilder {
     let pointBorderColor: string[] = [];
 
     this.labels = [];
-    this.tempLineColor = [];
 
     for(let i = 0; i < this.hData.length; i++) {
-      let time = LocalDateFormater.formate(this.hData[i].creation_date);
+      let time = DateFormater.formate(this.hData[i].creation_date);
       this.labels.push(time);
       humData.push({ y: this.hData[i].humidity, x: time });
       presData.push({ y: this.hData[i].pressure, x: time });
@@ -62,16 +34,12 @@ export class DayHistoryChartsBuilder extends ChartsBuilder {
       this.presSetRadius(presPointsRadius, this.day, this.hData[i]);
       this.tempSetRadius(tempPointsRadius, this.day, this.hData[i]);
       
-      const c = this.calcColor(tempData[i].y);
-      pointsBackgroundColor.push(this.RGBAtoRGB(c.color.r, c.color.g, c.color.b, 0.7));
+      const c = GradientUtils.calcColor(tempData[i].y);
+      pointsBackgroundColor.push(GradientUtils.RGBAtoRGB(c.color.r, c.color.g, c.color.b, 0.7));
       pointBorderColor.push(c.rgb);
-
-      if(i > 0) {
-        this.tempLineColor.push(this.calcColor((tempData[i].y + tempData[i - 1].y) / 2));
-      }
     }
       
-    this.humDatasets = [{
+    this.datasets.humidity = [{
       label: 'Humidade',
       data: humData,
       fill: false,
@@ -81,7 +49,7 @@ export class DayHistoryChartsBuilder extends ChartsBuilder {
       borderColor: 'rgb(53, 72, 109)',
     }];
 
-    this.presDatasets = [{
+    this.datasets.pressure = [{
       label: 'Pressão',
       data: presData,
       fill: false,
@@ -91,9 +59,10 @@ export class DayHistoryChartsBuilder extends ChartsBuilder {
       borderColor: '#666',
     }];
 
-    this.tempDatasets = [{
+    this.datasets.temperature = [{
       label: 'Temperatura',
       data: tempData,
+      fill: false,
       pointBackgroundColor: pointsBackgroundColor,
       pointBorderColor: pointBorderColor,
       pointRadius: tempPointsRadius,
@@ -149,5 +118,5 @@ export class DayHistoryChartsBuilder extends ChartsBuilder {
       }
     }
     tempPointsRadius.push(0);
-  }  
+  }
 }

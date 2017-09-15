@@ -4,11 +4,11 @@ import Chart from 'chart.js';
 
 import { LiveWeatherSocket, LiveData } from './../services/socket.service';
 import { DayHistoryData, ParamData, DayData } from './../utils/forecast.types';
-import { TemperatureChart } from './../../charts/temperature.chart';
+import { GradientTemperatureChart } from './gradient.temperature/gradient.temperature.chart';
 import { HumidityChart } from './../../charts/humidity.chart';
 import { PressureChart } from './../../charts/pressure.chart';
-import { LocalDateFormater } from './../utils/localdateformater';
-import { DayHistoryChartsBuilder } from './chart.service';
+import { DayHistoryChartsBuilder } from './gradient.temperature/chart.service';
+import { DateFormater } from './date.formater';
 
 @Component({
   selector: 'day-history',
@@ -23,7 +23,7 @@ export class DayHistory implements OnInit {
   @ViewChild('humChart') humChart: ElementRef;
   @ViewChild('presChart') presChart: ElementRef;
 
-  private tc: TemperatureChart;
+  private tc: GradientTemperatureChart;
   private hc: HumidityChart;
   private pc: PressureChart;
   private dataReceived = false;
@@ -37,8 +37,8 @@ export class DayHistory implements OnInit {
   public ngOnInit() {
 
     if(this.dayHistory.length > 1) {
-      const date1 = LocalDateFormater.formate(this.dayHistory[0].creation_date);
-      const date2 = LocalDateFormater.formate(this.dayHistory[this.dayHistory.length - 1].creation_date);
+      const date1 = DateFormater.formate(this.dayHistory[0].creation_date);
+      const date2 = DateFormater.formate(this.dayHistory[this.dayHistory.length - 1].creation_date);
 
       if(date1 === date2) {
         this.dayHistory.shift();
@@ -51,11 +51,11 @@ export class DayHistory implements OnInit {
   public ngAfterViewInit() {
     this.chartsBuilder = new DayHistoryChartsBuilder(this.dayHistory, this.dayData);
     
-    this.tc = new TemperatureChart(this.tempChart.nativeElement, this.chartsBuilder);
+    this.tc = new GradientTemperatureChart(this.tempChart.nativeElement, this.chartsBuilder);
     this.pc = new PressureChart(this.presChart.nativeElement, this.chartsBuilder)
     this.hc = new HumidityChart(this.humChart.nativeElement, this.chartsBuilder)
 
-    this.chartsBuilder.buildLabels();  
+    this.chartsBuilder.build();  
     this.tc.buildChart(); 
     this.hc.buildChart();  
     this.pc.buildChart();
@@ -109,10 +109,10 @@ export class DayHistory implements OnInit {
     data.pressure = Math.round(data.pressure * 100) / 100;
     data.temperature = Math.round(data.temperature * 100) / 100;    
     
-    const date1 = LocalDateFormater.formate(data.creation_date);
+    const date1 = DateFormater.formate(data.creation_date);
     
     for(let i = 0; i < this.dayHistory.length; i++) {
-      const date2 = LocalDateFormater.formate(this.dayHistory[i].creation_date);
+      const date2 = DateFormater.formate(this.dayHistory[i].creation_date);
       if(date1 === date2) {
         const erasedData = this.dayHistory.splice(0, i + 1);
         break;
@@ -129,7 +129,7 @@ export class DayHistory implements OnInit {
 
     this.updateWeatherDayHistory(this.dayHistory);
 
-    this.chartsBuilder.buildLabels();
+    this.chartsBuilder.build();
 
     this.tc.buildChart();
     this.hc.buildChart();  
