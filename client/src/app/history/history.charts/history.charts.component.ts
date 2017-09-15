@@ -57,6 +57,11 @@ export class HistoryCharts {
         intersect: false,
         animationDuration: 0,
       },
+      elements: {
+        line: {
+            tension: 0,
+        }
+      },
       title: {
         text: 'Variação da temperatura',
         display: true,
@@ -68,7 +73,7 @@ export class HistoryCharts {
       responsive: true,
       maintainAspectRatio: true,
       responsiveAnimationDuration: 0,
-    }
+    };
 
     const humChartOptions = {
       tooltips: {
@@ -84,6 +89,11 @@ export class HistoryCharts {
         intersect: false,
         animationDuration: 0,
       },
+      elements: {
+        line: {
+            tension: 0,
+        }
+      },
       title: {
         text: 'Variação da Humidade',
         display: true,
@@ -95,7 +105,7 @@ export class HistoryCharts {
       responsive: true,
       maintainAspectRatio: true,
       responsiveAnimationDuration: 0,
-    }
+    };
 
     const presChartOptions = {
       tooltips: {
@@ -115,6 +125,11 @@ export class HistoryCharts {
         text: 'Variação da Pressão',
         display: true,
       },
+      elements: {
+        line: {
+            tension: 0,
+        }
+      },
       scales: {
         xAxes: [{
             type: 'category',
@@ -122,7 +137,7 @@ export class HistoryCharts {
       responsive: true,
       maintainAspectRatio: true,
       responsiveAnimationDuration: 0,
-    }
+    };
 
     this.chartsBuilder.build();  
     this.tc.buildChart('line', tempChartOptions); 
