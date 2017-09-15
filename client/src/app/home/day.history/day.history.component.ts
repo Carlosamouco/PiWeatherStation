@@ -130,7 +130,6 @@ export class DayHistory implements OnInit {
     this.updateWeatherDayHistory(this.dayHistory);
 
     this.chartsBuilder.build();
-
     this.tc.buildChart();
     this.hc.buildChart();  
     this.pc.buildChart();

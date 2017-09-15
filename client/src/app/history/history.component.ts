@@ -34,6 +34,9 @@ export class History {
 
   public iDate: string;
   public eDate: string;
+  private ed: string;
+  private id: string;
+  public interval: string = '00:05';
 
   constructor(private http: HttpClient) {
   }
@@ -43,25 +46,61 @@ export class History {
       return false;
     }
 
-    if(new Date(this.eDate).getTime() >= new Date(this.iDate).getTime()) {
-      return true;
+    this.id = this.iDate;
+    this.ed = this.eDate;
+
+    let d = this.isValideDate(this.id);
+    if(d !== undefined) {
+      this.id = d;
     }
-    else {
-      return false;
+
+    d = this.isValideDate(this.ed);
+    if(d !== undefined) {
+      this.ed = d;
+    }
+
+    if(!isNaN(Date.parse(this.ed)) && !isNaN(Date.parse(this.id))) {
+      if(new Date(this.ed).getTime() >= new Date(this.id).getTime()) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  private isValideDate(date): string {
+    if(/^(0[1-9]|[1-2]\d|3[0-1])\/(1[0-2]|0[1-9])\/([1-9]\d{0,5}|0{1,5}1)[ ]*(\d{2}:\d{2})?$/.test(date)) {
+      const r = date.split(' ');
+      const d = r[0].split('/');
+      return d[2] + '-' + d[1] + '-' + d[0] + (r.length > 1? 'T' + r[1] : '');
     }
   }
 
-  public datesAsArray(): string {
-    if(!this.datesAreValid()) {
-      return 'invalid';
-    }
-    else {
+  private intervalIsValid(): boolean {
+    return /^\d{2}:\d{2}$/.test(this.interval); 
+  }
+
+  public intervalClass(): string {
+    if(this.intervalIsValid()) {
       return 'valid';
     }
+    return 'invalid';
+  }
+
+  public datesClass(date: string): string {
+    if(!this.datesAreValid()) {
+      if(this.isValideDate(date) !== undefined || !isNaN(Date.parse(date))) {
+        return 'y-invalid';
+      }
+      return 'invalid';
+    }
+    return 'valid';    
   }
 
   public isFormValid(form) {
-    return this.datesAreValid() && form.valid;
+    return this.datesAreValid() && form.valid && this.intervalIsValid();
   }
 
   public submit(form) {
@@ -72,9 +111,9 @@ export class History {
       seconds = 24*3600;
     }
 
-    let iDate = new Date(form.value.idaytime).toISOString();
-    let eDate = new Date(form.value.edaytime).toISOString()
-
+    let iDate = new Date(this.id).toISOString();
+    let eDate = new Date(this.ed).toISOString();
+    
     this.http.get<WeatherHistory[]>(`/api/summary/${seconds}/${iDate}/${eDate}`).subscribe(data => {
       this.charts.buildCharts(data)
     });
