@@ -85,7 +85,7 @@ export class HistoryCharts {
         animationDuration: 0,
       },
       title: {
-        text: 'Variação da temperatura',
+        text: 'Variação da Humidade',
         display: true,
       },
       scales: {
@@ -112,7 +112,7 @@ export class HistoryCharts {
         animationDuration: 0,
       },
       title: {
-        text: 'Variação da temperatura',
+        text: 'Variação da Pressão',
         display: true,
       },
       scales: {
