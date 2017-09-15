@@ -23,7 +23,6 @@ export class HistoryCharts {
   private hc: HumidityChart;
   private pc: PressureChart;
   private chartsBuilder: HistoryChartsBuilder;
-  private 
 
   public hasData: boolean = false;  
 
@@ -44,10 +43,91 @@ export class HistoryCharts {
       this.chartsBuilder.updateData(history);
     }
 
-    this.chartsBuilder.buildLabels();  
-    this.tc.buildChart(); 
-    this.hc.buildChart();  
-    this.pc.buildChart();
+    const tempChartOptions = {
+      tooltips: {
+        mode: 'index',
+        intersect: false
+      },
+      showLines: true,
+      animation: {
+        duration: 0,
+      },
+      hover: {
+        mode: 'index',
+        intersect: false,
+        animationDuration: 0,
+      },
+      title: {
+        text: 'Variação da temperatura',
+        display: true,
+      },
+      scales: {
+        xAxes: [{
+            type: 'category',
+        }]},
+      responsive: true,
+      maintainAspectRatio: true,
+      responsiveAnimationDuration: 0,
+    }
+
+    const humChartOptions = {
+      tooltips: {
+        mode: 'index',
+        intersect: false
+      },
+      showLines: true,
+      animation: {
+        duration: 0,
+      },
+      hover: {
+        mode: 'index',
+        intersect: false,
+        animationDuration: 0,
+      },
+      title: {
+        text: 'Variação da temperatura',
+        display: true,
+      },
+      scales: {
+        xAxes: [{
+            type: 'category',
+        }]},
+      responsive: true,
+      maintainAspectRatio: true,
+      responsiveAnimationDuration: 0,
+    }
+
+    const presChartOptions = {
+      tooltips: {
+        mode: 'index',
+        intersect: false
+      },
+      showLines: true,
+      animation: {
+        duration: 0,
+      },
+      hover: {
+        mode: 'index',
+        intersect: false,
+        animationDuration: 0,
+      },
+      title: {
+        text: 'Variação da temperatura',
+        display: true,
+      },
+      scales: {
+        xAxes: [{
+            type: 'category',
+        }]},
+      responsive: true,
+      maintainAspectRatio: true,
+      responsiveAnimationDuration: 0,
+    }
+
+    this.chartsBuilder.build();  
+    this.tc.buildChart('line', tempChartOptions); 
+    this.hc.buildChart('line', humChartOptions);  
+    this.pc.buildChart('line', presChartOptions);
 
     this.hasData = true;
   }

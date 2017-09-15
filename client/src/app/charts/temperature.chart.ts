@@ -1,88 +1,45 @@
 import Chart from 'chart.js';
 
 import { ChartsBuilder } from './charts.builder';
+import { ChartFactory } from './chart';
 
-export class TemperatureChart {
-  private ctx: HTMLCanvasElement;
-  private chart: Chart;
-  private tempBuilder: ChartsBuilder;
-
-  public constructor(ctx: HTMLCanvasElement, tempBuilder: ChartsBuilder) { 
-    this.tempBuilder = tempBuilder;
-    this.ctx = ctx;
+export class TemperatureChart extends ChartFactory {
+  public constructor(ctx: HTMLCanvasElement, builder: ChartsBuilder) { 
+    super(ctx, builder);
   }
 
-  public buildChart() {
-    let lineColors = this.tempBuilder.getTempLineColors();
-
-    Chart.defaults.temperatureChart = Chart.defaults.line;
-    
-    let tempChart = Chart.controllers.line.extend({
-      draw: function(ease) {
-        Chart.controllers.line.prototype.draw.call(this, ease);
-       
-        const data = this.getMeta().data;
-        const ctx = this.chart.chart.ctx;
-        
-        for(let i = 1; i < data.length; i++) {
-          let p0 = data[i - 1];
-          let p1 = data[i];          
-
-          ctx.beginPath();
-          ctx.lineWidth = 3;
-          ctx.strokeStyle = lineColors[i - 1].rgb;
-          ctx.moveTo(p0._view.x, p0._view.y);
-          ctx.lineTo(p1._view.x, p1._view.y);
-          ctx.stroke();
-          ctx.closePath();
-        }
-      }      
-    });
-
-    Chart.controllers.temperatureChart = tempChart; 
-
-    if(!this.chart) {
-      this.chart = new Chart(this.ctx, {
-      type: 'temperatureChart',
-      data: {
-          labels:  this.tempBuilder.getLabels(),
-          datasets:  this.tempBuilder.getTempDatasets(),
-      },
-      options: {
-          tooltips: {
-            mode: 'nearest',
-            intersect: false
-          },
-          showLines: false,
-          animation: {
-            duration: 0,
-          },
-          hover: {
-            mode: 'nearest',
-            intersect: false,
-            animationDuration: 0,
-          },
-          title: {
-            text: 'Variação da temperatura',
-            display: true,
-          },
-          legend: {
-            display: false,
-          },
-          scales: {
-            xAxes: [{
-                type: 'category',
-            }]},
-          responsive: true,
-          maintainAspectRatio: true,
-          responsiveAnimationDuration: 0,
-        }
-      });
+  public buildChart(chartType: string = 'line', chartOptions?: any) {
+    if(!chartOptions) {
+      chartOptions = {
+        tooltips: {
+          mode: 'nearest',
+          intersect: false
+        },
+        showLines: true,
+        animation: {
+          duration: 0,
+        },
+        hover: {
+          mode: 'nearest',
+          intersect: false,
+          animationDuration: 0,
+        },
+        title: {
+          text: 'Variação da temperatura',
+          display: true,
+        },
+        legend: {
+          display: false,
+        },
+        scales: {
+          xAxes: [{
+              type: 'category',
+          }]},
+        responsive: true,
+        maintainAspectRatio: true,
+        responsiveAnimationDuration: 0,
+      }
     }
-    else {
-      this.chart.data.labels = this.tempBuilder.getLabels();
-      this.chart.data.datasets = this.tempBuilder.getTempDatasets();
-      this.chart.update();
-    }
+    super.build(chartType, chartOptions, this.builder.getDatasets().temperature);
   }
 }
