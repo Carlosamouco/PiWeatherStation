@@ -68,16 +68,15 @@ export class HistoryChartsBuilder extends ChartsBuilder {
       maxTemp.push({ y: this.hData[i].temperature.max, x: time }); 
     }
       
-    this.datasets.humidity = [      
-    {
-      label: 'Humidade Mín.',
-      data: minHum,
+    this.datasets.humidity = [{
+      label: 'Humidade Máx.',
+      data: maxHum,
       fill: false,
       hidden: true,
-      pointBackgroundColor: '#457cfc',
-      pointBorderColor: '#457cfc',
+      pointBackgroundColor: '#f84040',
+      pointBorderColor: '#f84040',
       pointRadius: 0,
-      borderColor: '#457cfc',
+      borderColor: '#f84040',
     },
     {
       label: 'Humidade Média',
@@ -89,28 +88,27 @@ export class HistoryChartsBuilder extends ChartsBuilder {
       borderColor: '#3bff5d',
     },
     {
-      label: 'Humidade Máx.',
-      data: maxHum,
+      label: 'Humidade Mín.',
+      data: minHum,
+      fill: false,
+      hidden: true,
+      pointBackgroundColor: '#457cfc',
+      pointBorderColor: '#457cfc',
+      pointRadius: 0,
+      borderColor: '#457cfc',
+    }];
+
+    this.datasets.pressure = [{
+      label: 'Pressão Máx.',
+      data: maxPres,
       fill: false,
       hidden: true,
       pointBackgroundColor: '#f84040',
       pointBorderColor: '#f84040',
       pointRadius: 0,
       borderColor: '#f84040',
-    }];
-
-    this.datasets.pressure = [
-      {
-        label: 'Pressão Mín.',
-        data: minPres,
-        fill: false,
-        hidden: true,
-        pointBackgroundColor: '#457cfc',
-        pointBorderColor: '#457cfc',
-        pointRadius: 0,
-        borderColor: '#457cfc',
-      },
-      {
+    },      
+    {
       label: 'Pressão Média',
       data: avgPres,
       fill: false,
@@ -120,25 +118,26 @@ export class HistoryChartsBuilder extends ChartsBuilder {
       borderColor: '#3bff5d',
     },
     {
-      label: 'Pressão Máx.',
-      data: maxPres,
-      fill: false,
-      hidden: true,
-      pointBackgroundColor: '#f84040',
-      pointBorderColor: '#f84040',
-      pointRadius: 0,
-      borderColor: '#f84040',
-    }];
-
-    this.datasets.temperature = [{
-      label: 'Temperatura Mín.',
-      data: minTemp,
+      label: 'Pressão Mín.',
+      data: minPres,
       fill: false,
       hidden: true,
       pointBackgroundColor: '#457cfc',
       pointBorderColor: '#457cfc',
       pointRadius: 0,
       borderColor: '#457cfc',
+    },
+   ];
+
+    this.datasets.temperature = [{
+      label: 'Temperatura Máx.',
+      data: maxTemp,
+      fill: false,
+      hidden: true,
+      pointBackgroundColor: '#f84040',
+      pointBorderColor: '#f84040',
+      pointRadius: 0,
+      borderColor: '#f84040',
     },
     {
       label: 'Temperatura Média',
@@ -150,14 +149,14 @@ export class HistoryChartsBuilder extends ChartsBuilder {
       borderColor: '#3bff5d',
     },
     {
-      label: 'Temperatura Máx.',
-      data: maxTemp,
+      label: 'Temperatura Mín.',
+      data: minTemp,
       fill: false,
       hidden: true,
-      pointBackgroundColor: '#f84040',
-      pointBorderColor: '#f84040',
+      pointBackgroundColor: '#457cfc',
+      pointBorderColor: '#457cfc',
       pointRadius: 0,
-      borderColor: '#f84040',
+      borderColor: '#457cfc',
     }];
   }
 }

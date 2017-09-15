@@ -16,28 +16,31 @@ export class TemperatureChart extends ChartFactory {
           intersect: false
         },
         showLines: true,
-        animation: {
-          duration: 0,
-        },
-        hover: {
-          mode: 'nearest',
-          intersect: false,
-          animationDuration: 0,
-        },
         title: {
           text: 'Variação da temperatura',
-          display: true,
+          display: true
         },
         legend: {
-          display: false,
+          display: false
+        },
+        animation: {
+          duration: 0
+        },
+        hover: {
+          animationDuration: 0
+        },
+        elements: {
+          line: {
+              tension: 0,
+          }
         },
         scales: {
           xAxes: [{
-              type: 'category',
+              type: 'category'
           }]},
         responsive: true,
         maintainAspectRatio: true,
-        responsiveAnimationDuration: 0,
+        responsiveAnimationDuration: 0
       }
     }
     super.build(chartType, chartOptions, this.builder.getDatasets().temperature);
