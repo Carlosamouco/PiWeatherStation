@@ -6,15 +6,15 @@
       <form (ngSubmit)="submit(historyForm.form)" #historyForm="ngForm">
         <div class="form-group">
           <label for="iDate">Data Inicial</label>
-          <input type="datetime-local" class="form-control" id="iDate" [ngClass]="datesAsArray()" name="idaytime" [(ngModel)]="iDate" required> 
+          <input type="datetime-local" class="form-control" id="iDate" [ngClass]="datesClass(iDate)" placeholder="dd/mm/aaaa --:--" name="idaytime" [(ngModel)]="iDate" required> 
         </div>
         <div class="form-group">
           <label for="eDate">Data de Fim</label>
-          <input type="datetime-local" class="form-control" id="eDate" [ngClass]="datesAsArray()" name="edaytime" [(ngModel)]="eDate" required>
+          <input type="datetime-local" class="form-control" id="eDate" [ngClass]="datesClass(eDate)" placeholder="dd/mm/aaaa --:--" name="edaytime" [(ngModel)]="eDate" required>
         </div>
         <div class="form-group">
           <label for="interval">Intervalo de Tempo</label>
-          <input type="time" class="form-control"  id="interval" name="interval" ngModel required>
+          <input type="time" class="form-control"  id="interval" [ngClass]="intervalClass()" placeholder="--:--" name="interval" [(ngModel)]="interval" required>
           <p class="help-block">Periodo de tempo entre resultados. Selecione '00:00' para uma vista diária. </p>
         </div>
         <button type="submit" class="btn btn-default" [disabled]="!isFormValid(historyForm.form)">Submeter</button>

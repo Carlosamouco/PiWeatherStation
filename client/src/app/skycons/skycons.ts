@@ -608,14 +608,14 @@ export class Skycons {
         c= '0x'+c.join('');
         return { r:(c>>16)&255, g:(c>>8)&255, b: c&255, a:1 };
     }
-    else if(/^rgb\((( )*[0-9]{1,3}( )*,){2}( )*[0-9]{1,3}( )*\)$/.test(hex)) {    
+    else if(/^rgb\((( )*\d{1,3}( )*,){2}( )*\d{1,3}( )*\)$/.test(hex)) {    
       const rgb: string[] = hex.substring(4, hex.length-1)
       .replace(/ /g, '')
       .split(',');
 
       return { r: Number(rgb[0]), g: Number(rgb[1]), b: Number(rgb[2]), a:1 };
     }
-    else if(/^rgba\((( )*[0-9]{1,3}( )*,){3}( )*(0(\.\d+)?|1(\.0+)?)( )*\)$/.test(hex)) {    
+    else if(/^rgba\((( )*\d{1,3}( )*,){3}( )*(0(\.\d+)?|1(\.0+)?)( )*\)$/.test(hex)) {    
       const rgb: string[] = hex.substring(5, hex.length-1)
       .replace(/ /g, '')
       .split(',');
