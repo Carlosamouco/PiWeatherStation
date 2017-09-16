@@ -1,5 +1,7 @@
 import * as _ from 'lodash';
 import { Pool } from 'pg';
+import * as moment from 'moment-timezone';
+
 import { DBConfig } from "../../config/db.conf";
 
 export interface Measure {
@@ -63,6 +65,9 @@ export class WeatherHistory {
     }
 
     static getDetailedSummary(interval: string, start: string, end: string) {
+
+        const offset = moment.tz("Europe/Lisbon").utcOffset();
+
         return DBConfig.init().pool.query(`
             SELECT 
             json_build_object(
@@ -86,7 +91,7 @@ export class WeatherHistory {
                         'epoch' FROM creation_date AT TIME ZONE 'Europe/Lisbon'
                     ) / $3 
                 ) * $3
-            ) + (now() AT TIME ZONE 'UTC' - now() AT TIME ZONE 'Europe/Lisbon') AS interval_alias
+            ) - interval'${offset} minutes' AS interval_alias
             FROM "weather history"
             WHERE creation_date AT TIME ZONE 'Europe/Lisbon' BETWEEN $1 AND $2
             GROUP BY interval_alias 
