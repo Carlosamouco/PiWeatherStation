@@ -62,20 +62,7 @@ export class WeatherHistory {
             `, [start, end]);
     }
 
-    static getDetailedSummary(interval: string, offset: string, start: string, end: string) {
-        let off: number = parseFloat(offset);
-        if(isNaN(off)) {
-            throw 'offset is not a number';
-        }
-
-        let sig = '-';
-
-        if(off < 0) {
-            sig = '+';
-        }
-        
-        const m = Math.abs(off);
-
+    static getDetailedSummary(interval: string, start: string, end: string) {
         return DBConfig.init().pool.query(`
             SELECT 
             json_build_object(
@@ -97,14 +84,14 @@ export class WeatherHistory {
                 to_timestamp(
                     floor(
                         extract(
-                            'epoch' FROM creation_date ${sig} '${m} minutes'::interval
+                            'epoch' FROM creation_date AT TIME ZONE 'Europe/Lisbon'
                         ) / $3 
                     ) * $3
                 )
                 , 'YYYY-MM-DD HH24:MI:SS'
             ) AS interval_alias
             FROM "weather history"
-            WHERE creation_date BETWEEN $1 AND $2
+            WHERE creation_date AT TIME ZONE 'Europe/Lisbon' BETWEEN $1 AND $2
             GROUP BY interval_alias 
             ORDER BY interval_alias ASC
             `, [start, end, interval]);
