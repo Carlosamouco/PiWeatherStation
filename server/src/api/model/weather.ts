@@ -1,5 +1,4 @@
-import * as Promise from "bluebird";
-import * as _ from "lodash";
+import * as _ from 'lodash';
 import { Pool } from 'pg';
 import { DBConfig } from "../../config/db.conf";
 
@@ -63,21 +62,7 @@ export class WeatherHistory {
             `, [start, end]);
     }
 
-    static getDetailedSummary(interval: string, offset: string, start: string, end: string) {
-        let off: number = parseFloat(offset);
-        if(isNaN(off)) {
-            throw 'offset is not a number';
-        }
-
-        let sig = '-';
-
-        if(off < 0) {
-            sig = '+';
-        }
-
-        const h = Math.floor(Math.abs(off) / 60);
-        const m = Math.abs(off) % 60;
-
+    static getDetailedSummary(interval: string, timezone: string, start: string, end: string) {
         return DBConfig.init().pool.query(`
             SELECT 
             json_build_object(
@@ -98,14 +83,14 @@ export class WeatherHistory {
             to_timestamp(
                 floor(
                     extract(
-                        'epoch' FROM creation_date ${sig} '${h} hours'::interval ${sig} '${m} minutes'::interval 
+                        'epoch' FROM creation_date AT TIME ZONE $4
                     ) / $3 
                 ) * $3
-            ) as interval_alias
+            ) AT TIME ZONE $4 AS interval_alias
             FROM "weather history"
             WHERE creation_date BETWEEN $1 AND $2
             GROUP BY interval_alias 
             ORDER BY interval_alias ASC
-            `, [start, end, interval]);
+            `, [start, end, interval, timezone]);
     }
 }

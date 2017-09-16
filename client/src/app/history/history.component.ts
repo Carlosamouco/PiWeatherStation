@@ -113,11 +113,11 @@ export class History {
       seconds = 24*3600;
     }
 
-    const offset = new Date().getTimezoneOffset();    
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;    
     let iDate = new Date(this.id).toISOString();
     let eDate = new Date(this.ed).toISOString();
     
-    this.http.get<WeatherHistory[]>(`/api/summary/${seconds}/${offset}/${iDate}/${eDate}`).subscribe(data => {
+    this.http.get<WeatherHistory[]>(`/api/summary/${seconds}/${timezone}/${iDate}/${eDate}`).subscribe(data => {
       this.charts.buildCharts(data);
     });
   }

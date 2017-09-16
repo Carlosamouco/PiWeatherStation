@@ -27,7 +27,7 @@ export class WeatherController {
   }
 
   static getDetailedSummary(req: express.Request, res: express.Response):void {
-    WeatherHistory.getDetailedSummary(req.params.interval, req.params.offset, req.params.start, req.params.end)
+    WeatherHistory.getDetailedSummary(req.params.interval, req.params.timezone, req.params.start, req.params.end)
       .then(result => res.status(200).json(result.rows))
       .catch(error => res.status(400).json(error));
   }
