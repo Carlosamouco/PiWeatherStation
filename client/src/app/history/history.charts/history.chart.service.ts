@@ -30,7 +30,7 @@ export class HistoryChartsBuilder extends ChartsBuilder {
     const mn = date.getMinutes();
 
 
-    return  (m < 10 ? '0' + m : m) + '/' + (d < 10 ? '0' + d : d) + ' '
+    return  (d < 10 ? '0' + d : d) + '/' + (m < 10 ? '0' + m : m) + ' '
             + (h < 10 ? '0' + h : h) + ':' + (mn < 10 ? '0' + mn : mn);
   }
 

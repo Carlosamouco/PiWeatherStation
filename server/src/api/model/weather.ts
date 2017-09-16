@@ -82,13 +82,15 @@ export class WeatherHistory {
                 ,'max', MAX(pressure)
                 ,'min', MIN(pressure)
             ) AS pressure,
-            to_timestamp(
-                floor(
-                    extract(
-                        'epoch' FROM creation_date AT TIME ZONE $4
-                    ) / $3 
-                ) * $3
-            ) AT TIME ZONE $4 AS interval_alias
+            to_char(
+                to_timestamp(
+                    floor(
+                        extract(
+                            'epoch' FROM creation_date AT TIME ZONE $4
+                        ) / $3 
+                    ) * $3
+                ), 'YYYY-MM-DD HH24:MI:SS'
+            ) AS interval_alias
             FROM "weather history"
             WHERE creation_date BETWEEN $1 AND $2
             GROUP BY interval_alias 
