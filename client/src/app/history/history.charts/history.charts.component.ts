@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import Chart from 'chart.js';
 
-import { TemperatureChart } from './../../charts/temperature.chart';
+import { GradientTemperatureChart } from './../../charts/gradient.temperature.chart';
 import { HumidityChart } from './../../charts/humidity.chart';
 import { PressureChart } from './../../charts/pressure.chart';
 import { HistoryChartsBuilder } from './history.chart.service';
@@ -19,7 +19,7 @@ export class HistoryCharts {
   @ViewChild('humChart') humChart: ElementRef;
   @ViewChild('presChart') presChart: ElementRef;
 
-  private tc: TemperatureChart;
+  private tc: GradientTemperatureChart;
   private hc: HumidityChart;
   private pc: PressureChart;
   private chartsBuilder: HistoryChartsBuilder;
@@ -35,7 +35,7 @@ export class HistoryCharts {
     if(!this.chartsBuilder) {
       this.chartsBuilder = new HistoryChartsBuilder(history);
 
-      this.tc = new TemperatureChart(this.tempChart.nativeElement, this.chartsBuilder);
+      this.tc = new GradientTemperatureChart(this.tempChart.nativeElement, this.chartsBuilder);
       this.pc = new PressureChart(this.presChart.nativeElement, this.chartsBuilder);
       this.hc = new HumidityChart(this.humChart.nativeElement, this.chartsBuilder);
     }
@@ -48,7 +48,7 @@ export class HistoryCharts {
         mode: 'index',
         intersect: false
       },
-      showLines: true,
+      showLines: false,
       animation: {
         duration: 0,
       },
@@ -56,11 +56,6 @@ export class HistoryCharts {
         mode: 'index',
         intersect: false,
         animationDuration: 0,
-      },
-      elements: {
-        line: {
-            tension: 0,
-        }
       },
       title: {
         text: 'Variação da temperatura',
@@ -140,7 +135,7 @@ export class HistoryCharts {
     };
 
     this.chartsBuilder.build();  
-    this.tc.buildChart('line', tempChartOptions); 
+    this.tc.buildChart(tempChartOptions); 
     this.hc.buildChart('line', humChartOptions);  
     this.pc.buildChart('line', presChartOptions);
 
