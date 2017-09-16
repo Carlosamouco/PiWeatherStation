@@ -87,7 +87,6 @@ export class WeatherHistory {
                     ) / $3 
                 ) * $3
             ) + (now() AT TIME ZONE 'UTC' - now() AT TIME ZONE 'Europe/Lisbon') AS interval_alias
-            ) AS interval_alias
             FROM "weather history"
             WHERE creation_date AT TIME ZONE 'Europe/Lisbon' BETWEEN $1 AND $2
             GROUP BY interval_alias 
