@@ -140,7 +140,7 @@ export class HistoryCharts {
     };
 
     this.chartsBuilder.build();  
-    this.tc.buildChart(tempChartOptions); 
+    this.tc.buildChart('line', tempChartOptions); 
     this.hc.buildChart('line', humChartOptions);  
     this.pc.buildChart('line', presChartOptions);
 
