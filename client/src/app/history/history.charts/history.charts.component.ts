@@ -48,7 +48,7 @@ export class HistoryCharts {
         mode: 'index',
         intersect: false
       },
-      showLines: false,
+      showLines: true,
       animation: {
         duration: 0,
       },
