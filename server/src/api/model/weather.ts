@@ -63,6 +63,8 @@ export class WeatherHistory {
     }
 
     static getDetailedSummary(interval: string, timezone: string, start: string, end: string) {
+        timezone = timezone.replace(/-/g, '/');
+
         return DBConfig.init().pool.query(`
             SELECT 
             json_build_object(
