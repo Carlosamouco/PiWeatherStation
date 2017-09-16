@@ -79,16 +79,14 @@ export class WeatherHistory {
                 'avg', ROUND(AVG(pressure), 2)
                 ,'max', MAX(pressure)
                 ,'min', MIN(pressure)
-            ) AS pressure,
-            to_char(
-                to_timestamp(
-                    floor(
-                        extract(
-                            'epoch' FROM creation_date AT TIME ZONE 'Europe/Lisbon'
-                        ) / $3 
-                    ) * $3
-                )
-                , 'YYYY-MM-DD HH24:MI:SS'
+            ) AS pressure
+            , to_timestamp(
+                floor(
+                    extract(
+                        'epoch' FROM creation_date AT TIME ZONE 'Europe/Lisbon'
+                    ) / $3 
+                ) * $3
+            ) + (now() AT TIME ZONE 'UTC' - now() AT TIME ZONE 'Europe/Lisbon') AS interval_alias
             ) AS interval_alias
             FROM "weather history"
             WHERE creation_date AT TIME ZONE 'Europe/Lisbon' BETWEEN $1 AND $2
