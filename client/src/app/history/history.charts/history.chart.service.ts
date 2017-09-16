@@ -1,5 +1,6 @@
 import { ChartsBuilder } from './../../charts/charts.builder';
 import { WeatherHistory } from './../history.component';
+import { GradientUtils } from './../../charts/gradient.utils';
 
 export class HistoryChartsBuilder extends ChartsBuilder {
 
@@ -47,8 +48,14 @@ export class HistoryChartsBuilder extends ChartsBuilder {
     let maxPres = [];
     let maxTemp = [];
 
-    let pointsBackgroundColor: string[] = [];
-    let pointBorderColor: string[] = [];
+    let maxPtBGColor: string[] = [];
+    let maxPtBColor: string[] = [];
+
+    let avgPtBGColor: string[] = [];
+    let avgPtBColor: string[] = [];
+
+    let minPtBGColor: string[] = [];
+    let minPtBColor: string[] = [];
 
     this.labels = [];
 
@@ -65,7 +72,20 @@ export class HistoryChartsBuilder extends ChartsBuilder {
 
       maxHum.push({ y: this.hData[i].humidity.max, x: time });
       maxPres.push({ y: this.hData[i].pressure.max, x: time });
-      maxTemp.push({ y: this.hData[i].temperature.max, x: time }); 
+      maxTemp.push({ y: this.hData[i].temperature.max, x: time });
+
+      const max = GradientUtils.calcColor(maxTemp[i].y);
+      const avg = GradientUtils.calcColor(avgTemp[i].y);
+      const min = GradientUtils.calcColor(minTemp[i].y);
+
+      maxPtBGColor.push(GradientUtils.RGBAtoRGB(max.color.r, max.color.g, max.color.b, 0.7));
+      maxPtBColor.push(max.rgb);
+
+      avgPtBGColor.push(GradientUtils.RGBAtoRGB(avg.color.r, avg.color.g, avg.color.b, 0.7));
+      avgPtBColor.push(avg.rgb);
+
+      minPtBGColor.push(GradientUtils.RGBAtoRGB(min.color.r, min.color.g, min.color.b, 0.7));
+      minPtBColor.push(min.rgb);
     }
       
     this.datasets.humidity = [{
@@ -134,8 +154,8 @@ export class HistoryChartsBuilder extends ChartsBuilder {
       data: maxTemp,
       fill: false,
       hidden: true,
-      pointBackgroundColor: '#f84040',
-      pointBorderColor: '#f84040',
+      pointBackgroundColor: maxPtBGColor,
+      pointBorderColor: maxPtBColor,
       pointRadius: 0,
       borderColor: '#f84040',
     },
@@ -143,8 +163,8 @@ export class HistoryChartsBuilder extends ChartsBuilder {
       label: 'Temperatura Média',
       data: avgTemp,
       fill: false,
-      pointBackgroundColor: '#3bff5d',
-      pointBorderColor: '#3bff5d',
+      pointBackgroundColor: avgPtBGColor,
+      pointBorderColor: avgPtBColor,
       pointRadius: 0,
       borderColor: '#3bff5d',
     },
@@ -153,8 +173,8 @@ export class HistoryChartsBuilder extends ChartsBuilder {
       data: minTemp,
       fill: false,
       hidden: true,
-      pointBackgroundColor: '#457cfc',
-      pointBorderColor: '#457cfc',
+      pointBackgroundColor: minPtBGColor,
+      pointBorderColor: minPtBColor,
       pointRadius: 0,
       borderColor: '#457cfc',
     }];

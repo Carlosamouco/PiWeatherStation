@@ -4,10 +4,10 @@ import Chart from 'chart.js';
 
 import { LiveWeatherSocket, LiveData } from './../services/socket.service';
 import { DayHistoryData, ParamData, DayData } from './../utils/forecast.types';
-import { GradientTemperatureChart } from './gradient.temperature/gradient.temperature.chart';
+import { GradientTemperatureChart } from './../../charts/gradient.temperature.chart';
 import { HumidityChart } from './../../charts/humidity.chart';
 import { PressureChart } from './../../charts/pressure.chart';
-import { DayHistoryChartsBuilder } from './gradient.temperature/chart.service';
+import { DayHistoryChartsBuilder } from './chart.service';
 import { DateFormater } from './date.formater';
 
 @Component({
