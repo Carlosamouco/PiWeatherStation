@@ -113,7 +113,9 @@ export class History {
       seconds = 24*3600;
     }
 
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;    
+    let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    timezone = timezone.replace(/\//g, '-');
+
     let iDate = new Date(this.id).toISOString();
     let eDate = new Date(this.ed).toISOString();
     
