@@ -57,6 +57,11 @@ export class HistoryCharts {
         intersect: false,
         animationDuration: 0,
       },
+      elements: {
+        line: {
+          tension: 0,
+        }
+      },
       title: {
         text: 'Variação da temperatura',
         display: true,
@@ -86,7 +91,7 @@ export class HistoryCharts {
       },
       elements: {
         line: {
-            tension: 0,
+          tension: 0,
         }
       },
       title: {
@@ -122,7 +127,7 @@ export class HistoryCharts {
       },
       elements: {
         line: {
-            tension: 0,
+          tension: 0,
         }
       },
       scales: {
@@ -135,7 +140,7 @@ export class HistoryCharts {
     };
 
     this.chartsBuilder.build();  
-    this.tc.buildChart(tempChartOptions); 
+    this.tc.buildChart('line', tempChartOptions); 
     this.hc.buildChart('line', humChartOptions);  
     this.pc.buildChart('line', presChartOptions);
 
