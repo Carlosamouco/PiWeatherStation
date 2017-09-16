@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import Chart from 'chart.js';
 
-import { GradientTemperatureChart } from './../../charts/gradient.temperature.chart';
+import { TemperatureChart } from './../../charts/temperature.chart';
 import { HumidityChart } from './../../charts/humidity.chart';
 import { PressureChart } from './../../charts/pressure.chart';
 import { HistoryChartsBuilder } from './history.chart.service';
@@ -19,7 +19,7 @@ export class HistoryCharts {
   @ViewChild('humChart') humChart: ElementRef;
   @ViewChild('presChart') presChart: ElementRef;
 
-  private tc: GradientTemperatureChart;
+  private tc: TemperatureChart;
   private hc: HumidityChart;
   private pc: PressureChart;
   private chartsBuilder: HistoryChartsBuilder;
@@ -35,7 +35,7 @@ export class HistoryCharts {
     if(!this.chartsBuilder) {
       this.chartsBuilder = new HistoryChartsBuilder(history);
 
-      this.tc = new GradientTemperatureChart(this.tempChart.nativeElement, this.chartsBuilder);
+      this.tc = new TemperatureChart(this.tempChart.nativeElement, this.chartsBuilder);
       this.pc = new PressureChart(this.presChart.nativeElement, this.chartsBuilder);
       this.hc = new HumidityChart(this.humChart.nativeElement, this.chartsBuilder);
     }
