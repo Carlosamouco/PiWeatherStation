@@ -17,7 +17,9 @@ for i in range(0, 6):
     PRESSURE = sense.get_pressure()
     
     if PRESSURE == 0:
+	sleep(0.05)
 	PRESSURE = sense.get_pressure()
+	# TEMPERATURE2 = sense.get_temperature_from_pressure() 
 
     HUMIDITY = sense.get_humidity()
 
@@ -39,13 +41,11 @@ TEMPERATURE = round(sum(tempList) / len(tempList), 2)
 PRESSURE = round(sum(presList) / len(presList), 2)
 HUMIDITY = round(sum(humList) / len(humList), 2)
 
-# print(TEMPERATURE2)
-
 JSON = {
     "temperature": TEMPERATURE,
     "humidity": HUMIDITY,
     "pressure": PRESSURE,
-    "creation_date": datetime.now().isoformat() + 'Z'
+    "creation_date": datetime.utcnow().isoformat()
 }
 
 print(json.dumps(JSON, ensure_ascii=False))
