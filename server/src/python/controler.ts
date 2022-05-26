@@ -1,4 +1,4 @@
-import * as PythonShell from 'python-shell';
+import { execFile } from 'child_process';
 import * as Promise from "bluebird";
 import { Measure, WeatherHistory } from "../api/model/weather";
 import { SocketControler } from './../socket.io'
@@ -8,28 +8,23 @@ export default class PythonControler {
 
   private static RunPythonShell(script :string):Promise {
     const options = {
-      mode: 'text',
       scriptPath: './src/python/scripts/',
-      args: []
     };
     
     return new Promise((resolve:Function, reject:Function) => {
-      PythonShell.run(script, options, function (err, results) {
+      execFile(script, [], { cwd: options.scriptPath }, (err, stdout, stderr) => {
         if (err) reject(err);
-        resolve(results);
+        resolve(stdout);
       }); 
     });
   }
 
-  private static ParseResults(results: string[]):Measure {
-    if(results.length != 1) {
-      throw `Invalide results length. Expected 1 but found ${results.length}.`;
-    }
-    const measure: Measure = JSON.parse(results[0]);
+  private static ParseResults(results: string):Measure {
+    const measure: Measure = JSON.parse(results);
 
     let size: number = Object.keys(measure).length;
     if(size != 4) {
-      throw `Invalid object length. Expected 3 but found ${size}.`;
+      throw `Invalid object length. ${results}.`;
     }
 
     const keys: string[] = ['temperature', 'pressure', 'humidity', 'creation_date'];
@@ -39,11 +34,13 @@ export default class PythonControler {
       }
     }
 
+    measure['creation_date'] = new Date(measure['creation_date']).toISOString();
+
     return measure;
   }
 
   public static MakeMeasurement(): void {
-    PythonControler.RunPythonShell('weather.py')
+    PythonControler.RunPythonShell('./bme280')
       .then(results => {
         const measure: Measure = PythonControler.ParseResults(results);        
         WeatherHistory.addMeasure(measure)

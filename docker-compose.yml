@@ -19,13 +19,13 @@ services:
     links:
       - database:postgres
 
-  client:
-    build: ./client
-    volumes:
-      - ./client:/usr/src/app
-      - /usr/src/app/node_modules
-    ports: 
-      - "4200:4200"
+    # client:
+    # build: ./client
+    # volumes:
+    #   - ./client:/usr/src/app
+    #   - /usr/src/app/node_modules
+    # ports: 
+    #   - "4200:4200"
 
   server:
     build: ./server
@@ -40,8 +40,10 @@ services:
 
   nginx:
     build: ./nginx
+    volumes:
+      - ./client/dist:/var/www/html
     ports:
       - "80:80"
     links:
-      - client
+    #   - client
       - server

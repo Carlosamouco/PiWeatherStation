@@ -10,5 +10,5 @@ RUN npm install
 
 EXPOSE 4200
 
-CMD ["ng", "serve", "--host", "client", "--public-host", "http://192.168.1.70" ,"--prod", "--aot"]
+CMD ["ng", "serve", "--host", "client", "--public-host", "192.168.1.72" ,"--prod", "--aot"]
 
