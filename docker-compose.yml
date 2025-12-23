@@ -1,47 +1,59 @@
-version: "2.1"
-
 services:
   database:
-    build: ./database
+    build:
+      context: ./database
+      args:
+        ARCH_DB: ${ARCH_DB}
     volumes:
-      - /var/lib/postgresql
-    ports: 
+      - ./database/.pgdata:/var/lib/postgresql
+    ports:
       - "5432:5432"
     env_file:
       - ./database/.env
 
   pgadmin:
-    build: ./pgadmin
+    build:
+      context: ./pgadmin
+      args:
+        ARCH_PGADMIN: ${ARCH_PGADMIN}
     volumes:
       - ./pgadmin:/data
     ports:
       - "5050:5050"
+    env_file:
+      - ./pgadmin/.env
     links:
       - database:postgres
 
   client:
     build: ./client
     volumes:
-      - ./client:/usr/src/app
-      - /usr/src/app/node_modules
-    ports: 
+      - ./client:/app
+    ports:
       - "4200:4200"
+    links:
+      - server
 
   server:
-    build: ./server
-    privileged: true
+    build:
+      context: ./server
+      target: ${BUILD_TARGET}
+      args:
+        ARCH_NODE: ${ARCH_NODE}
     volumes:
-      - ./server:/usr/src/app
-      - /usr/src/app/node_modules
-    ports: 
+      - ./server/src:/usr/src/app/src
+    ports:
       - "3333:3333"
     links:
       - database:postgres
 
   nginx:
-    build: ./nginx
+    build:
+      context: ./nginx
+      args:
+        ARCH_NGINX: ${ARCH_NGINX}
     ports:
       - "80:80"
     links:
-      - client
+      # - client
       - server

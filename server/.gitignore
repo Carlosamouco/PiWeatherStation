@@ -1,7 +1,7 @@
-# compiled output
-/server
+# Outputs
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts
 
-# dependencies
-package-lock.json
-/node_modules
-/typings
+# Misc
+node_modules/

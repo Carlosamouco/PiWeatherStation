@@ -1,21 +1,17 @@
-import * as sio from 'socket.io';
-import * as express from "express";
-import PythonControler from "./../python/controler";
+import { Server as IOServer } from "socket.io";
+import { Server } from "node:http";
+import PythonControler from "./../python/controler.ts";
 
 export class SocketControler {
-  public static io: SocketIO.Server;
+  public static io: IOServer;
 
-  static init(server: express.Server) {
-    this.io = sio(server, {
-      path: '/api/live'
+  static init(server: Server) {
+    this.io = new IOServer(server, { path: "/live" });
+
+    this.io.on("connection", (socket) => {
+      if (PythonControler.lastMeasure) {
+        socket.emit("new measurement", PythonControler.lastMeasure);
+      }
     });
-    
-    this.io.on('connection', (socket) => {
-      console.log('connected!');
-      socket.emit('new measurement', PythonControler.lastMeasure);
-      socket.on('disconnect', function(){
-        console.log('user disconnected');
-      });
-    });
-  } 
+  }
 }

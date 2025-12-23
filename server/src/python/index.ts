@@ -1,12 +1,8 @@
-'use strict';
-
-import * as PythonShell from 'python-shell';
-import * as Promise from "bluebird";
-import PythonControler from "./controler";
+import PythonControler from "./controler.ts";
 
 export class Scheduler {
-  static init():void {
-    setInterval(PythonControler.MakeMeasurement, 60000);
+  static init(): void {
+    PythonControler.MakeMeasurement();
+    setInterval(PythonControler.MakeMeasurement, 10000);
   }
 }
-

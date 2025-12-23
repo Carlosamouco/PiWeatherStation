@@ -1,4 +1,3 @@
-FROM izone/arm:pgadmin
+ARG ARCH_PGADMIN
 
-RUN apk update \
- && apk add postgresql
+FROM ${ARCH_PGADMIN}

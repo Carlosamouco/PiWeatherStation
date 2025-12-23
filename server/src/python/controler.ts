@@ -1,70 +1,50 @@
-import * as PythonShell from 'python-shell';
-import * as Promise from "bluebird";
-import { Measure, WeatherHistory } from "../api/model/weather";
-import { SocketControler } from './../socket.io'
+import { PythonShell } from "python-shell";
+import { type Measure, WeatherHistory } from "../api/model/weather.ts";
+import { SocketControler } from "./../socket.io/index.ts";
 
 export default class PythonControler {
-  public static lastMeasure: Measure;
+  public static lastMeasure: { currMeasure: Measure; prevMeasure: Measure };
 
-  private static RunPythonShell(script :string):Promise {
-    const options = {
-      mode: 'text',
-      scriptPath: './src/python/scripts/',
-      args: []
-    };
-    
-    return new Promise((resolve:Function, reject:Function) => {
-      PythonShell.run(script, options, function (err, results) {
-        if (err) reject(err);
-        resolve(results);
-      }); 
+  private static RunPythonShell(script: string): Promise<string[]> {
+    return PythonShell.run(script, {
+      mode: "text",
+      scriptPath: "./src/python/scripts/",
+      args: [],
     });
   }
 
-  private static ParseResults(results: string[]):Measure {
-    if(results.length != 1) {
+  private static ParseResults(results: string[]): Measure {
+    if (results.length != 1) {
       throw `Invalide results length. Expected 1 but found ${results.length}.`;
     }
-    const measure: Measure = JSON.parse(results[0]);
+    const measure = JSON.parse(results[0]);
 
-    let size: number = Object.keys(measure).length;
-    if(size != 4) {
-      throw `Invalid object length. Expected 3 but found ${size}.`;
-    }
+    ["temperature", "pressure", "humidity"].forEach((key) => {
+      const value = Number.parseFloat(measure[key]);
 
-    const keys: string[] = ['temperature', 'pressure', 'humidity', 'creation_date'];
-    for(let i in keys) {
-      if (!(keys[i] in measure)) {
-        throw `Missing key ${keys[i]}.`;
+      if (value) {
+        measure[key] = Math.round(value * 100) / 100;
       }
-    }
+    });
 
     return measure;
   }
 
-  public static MakeMeasurement(): void {
-    PythonControler.RunPythonShell('weather.py')
-      .then(results => {
-        const measure: Measure = PythonControler.ParseResults(results);        
-        WeatherHistory.addMeasure(measure)
-          .then((res) => {
-            console.log('[PythonControler] New measurement: ', res.rows[0]);
-            let data = res.rows[0];
-            if(PythonControler.lastMeasure) {
-              data.risingTemp = (PythonControler.lastMeasure.temperature < data.temperature);
-              data.risingHum = (PythonControler.lastMeasure.humidity < data.humidity);
-              data.risingPres = (PythonControler.lastMeasure.pressure < data.pressure);
-            } 
-            else {
-              data.risingTemp = true;
-              data.risingHum = true;
-              data.risingPres = true;
-            }      
-            PythonControler.lastMeasure = data;    
-            SocketControler.io.emit('new measurement', data);
-          })
-          .catch(e => setImmediate(() => { throw e }));          
-      })
-      .catch(e => setImmediate(() => { throw e }));
+  public static async MakeMeasurement(): Promise<void> {
+    if (!PythonControler.lastMeasure) {
+      // discard first measurement
+      await PythonControler.RunPythonShell("test.py");
+    }
+
+    const results = await PythonControler.RunPythonShell("test.py");
+    const measure: Measure = PythonControler.ParseResults(results);
+    WeatherHistory.addMeasure(measure);
+
+    PythonControler.lastMeasure = {
+      currMeasure: measure,
+      prevMeasure: PythonControler.lastMeasure?.currMeasure,
+    };
+
+    SocketControler.io.emit("new measurement", PythonControler.lastMeasure);
   }
 }

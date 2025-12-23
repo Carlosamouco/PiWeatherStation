@@ -1,2 +1,5 @@
 # IDE - VSCode
 /.vscode
+
+node_modules
+/database/pgdata

@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+/* Base styles */
+html,
+body {
+  @apply bg-[var(--bg-color)] text-[var(--text-color)] transition-colors duration-300;
+}
+
+html,
+html.light {
+  --bg-color: #e5edf5;
+  --text-color: #303745;
+  color-scheme: light;
+}
+
+/* Dark mode */
+html,
+html.dark {
+  --bg-color: #303745;
+  --text-color: #e5edf5;
+  color-scheme: dark;
+}

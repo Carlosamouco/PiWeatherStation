@@ -1,14 +1,32 @@
-FROM arm32v7/node
-RUN npm install -g --unsafe-perm @angular/cli
-RUN mkdir -p /usr/src/app
+# FROM node:20-alpine AS development-dependencies-env
+# COPY . /app
+# WORKDIR /app
+# RUN npm ci
+# 
+# FROM node:20-alpine AS production-dependencies-env
+# COPY ./package.json package-lock.json /app/
+# WORKDIR /app
+# RUN npm ci --omit=dev
+# 
+# FROM node:20-alpine AS build-env
+# COPY . /app/
+# COPY --from=development-dependencies-env /app/node_modules /app/node_modules
+# WORKDIR /app
+# RUN npm run build
+# 
+# FROM node:20-alpine
+# COPY ./package.json package-lock.json /app/
+# COPY --from=production-dependencies-env /app/node_modules /app/node_modules
+# COPY --from=build-env /app/build /app/build
+# WORKDIR /app
+# CMD ["npm", "run", "start"]
 
-COPY package.json /usr/src/app/
+FROM node:20-alpine AS development-env
+COPY ./package.json package-lock.json /app/
+WORKDIR /app
+RUN npm ci
 
-WORKDIR /usr/src/app
-
-RUN npm install
-
+ENV PORT=4200
 EXPOSE 4200
 
-CMD ["ng", "serve", "--host", "client", "--public-host", "http://192.168.1.70" ,"--prod", "--aot"]
-
+CMD ["npm", "run", "dev"]

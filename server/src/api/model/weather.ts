@@ -1,45 +1,53 @@
-import * as _ from 'lodash';
-import { Pool } from 'pg';
-import * as moment from 'moment-timezone';
-
-import { DBConfig } from "../../config/db.conf";
+import { DBConfig } from "../../config/db.conf.ts";
 
 export interface Measure {
-    temperature: number;
-    pressure: number;
-    humidity: number;
-    creation_date: string;
+  temperature: number;
+  pressure: number;
+  humidity: number;
+  creation_date: string;
 }
 
 export interface Summary {
-    avg_temp: number;
-    avg_pres: number;
-    avg_hum: number;
-    day: string;
+  avg_temp: number;
+  avg_pres: number;
+  avg_hum: number;
+  day: string;
 }
 
 export class WeatherHistory {
-    static getAll() {
-        return DBConfig.init().pool.query('SELECT * FROM "weather history"', []);
-    }
+  static getAll() {
+    return DBConfig.init().pool.query('SELECT * FROM "weather history"', []);
+  }
 
-    static getByDate(start: string, end: string) {       
-        return DBConfig.init().pool.query(`
+  static getByDate(start: string, end: string) {
+    return DBConfig.init().pool.query(
+      `
             SELECT * from "weather history" 
             WHERE creation_date >= $1 AND creation_date <= $2
-            `, [start, end]);
-    }
+            `,
+      [start, end]
+    );
+  }
 
-    static addMeasure(_measure: Measure) {       
-        return DBConfig.init().pool.query(`
+  static addMeasure(_measure: Measure) {
+    return DBConfig.init().pool.query(
+      `
             INSERT INTO "weather history" (temperature, pressure, humidity, creation_date) 
             VALUES ($1, $2, $3, $4)
             RETURNING temperature, pressure, humidity, creation_date
-            `, [_measure.temperature, _measure.pressure, _measure.humidity, _measure.creation_date]);
-    }
-    
-    static getDailySummary(start: string, end: string) {
-        return DBConfig.init().pool.query(`
+            `,
+      [
+        _measure.temperature,
+        _measure.pressure,
+        _measure.humidity,
+        _measure.creation_date,
+      ]
+    );
+  }
+
+  static getDailySummary(start: string, end: string) {
+    return DBConfig.init().pool.query(
+      `
             SELECT
             creation_date::DATE AS day
             , json_build_object(
@@ -61,14 +69,16 @@ export class WeatherHistory {
             WHERE creation_date BETWEEN $1 AND $2
             GROUP BY day 
             ORDER BY day ASC
-            `, [start, end]);
-    }
+            `,
+      [start, end]
+    );
+  }
 
-    static getDetailedSummary(interval: string, start: string, end: string) {
+  static getDetailedSummary(interval: string, start: string, end: string) {
+    const offset = -new Date().getTimezoneOffset();
 
-        const offset = moment.tz("Europe/Lisbon").utcOffset();
-
-        return DBConfig.init().pool.query(`
+    return DBConfig.init().pool.query(
+      `
             SELECT 
             json_build_object(
                 'avg', ROUND(AVG(temperature), 2)
@@ -96,6 +106,8 @@ export class WeatherHistory {
             WHERE creation_date AT TIME ZONE 'Europe/Lisbon' BETWEEN $1 AND $2
             GROUP BY interval_alias 
             ORDER BY interval_alias ASC
-            `, [start, end, interval]);
-    }
+            `,
+      [start, end, interval]
+    );
+  }
 }
