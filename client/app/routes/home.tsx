@@ -65,7 +65,7 @@ interface HomeViewProps {
 function HomeView({ loaderData }: HomeViewProps) {
   const forecast = activeForecast(loaderData?.forecast ?? []);
   const weather = WeatherTypes[forecast?.idTipoTempo ?? 0];
-  const isDayRef = useRef<boolean | null>(null);
+  const [day, setDay] = useState<boolean | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const [history, setHistory] = useState(loaderData?.history ?? []);
 
@@ -107,7 +107,7 @@ function HomeView({ loaderData }: HomeViewProps) {
   useEffect(() => () => abortRef.current?.abort(), [abortRef]);
 
   useEffect(() => {
-    isDayRef.current = isDay(new Date());
+    setDay(isDay(new Date()));
   }, []);
 
   return (
@@ -115,7 +115,7 @@ function HomeView({ loaderData }: HomeViewProps) {
       <div className="flex flex-col flex-1 mx-4 sm:mx-0">
         <div className="mt-4">
           <LocationHeader />
-          {isDayRef.current ? (
+          {day ? (
             <weather.day className="h-70 mx-auto drop-shadow-xl" />
           ) : (
             <weather.night className="h-70 mx-auto drop-shadow-xl" />

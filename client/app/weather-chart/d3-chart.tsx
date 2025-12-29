@@ -39,7 +39,7 @@ export class D3WeatherChart {
     top: 5,
     right: 18,
     bottom: 20,
-    left: 12,
+    left: 18,
   } as const;
 
   private _textColor!: string;
@@ -52,6 +52,11 @@ export class D3WeatherChart {
   private _xScale!: d3.ScaleTime<number, number, never>;
   private _yScale!: d3.ScaleLinear<number, number, never>;
   private _destroyHandler: (() => void) | undefined;
+
+  private tempColor = d3
+    .scaleLinear<string>()
+    .domain([0, 15, 25, 35, 45])
+    .range(["#2196F3", "#4CAF50", "#FFC107", "#FF5722", "#B71C1C"]);
 
   /**
    * Constructor for D3WeatherChart
@@ -237,61 +242,49 @@ export class D3WeatherChart {
       .y((d) => yS(d.y))
       .curve(d3.curveLinear)
       .context(this._mainCtx);
-    lineGen(this._visiblePoints);
-    this._mainCtx.stroke();
+    /* lineGen(this._visiblePoints);
+    this._mainCtx.stroke(); */
 
-    /* mainCtx.fillStyle = "orange"; */
-    this._visiblePoints.forEach((d) => {
+    for (let i = 0; i < data.length - 1; i++) {
+      const segment = [this._visiblePoints[i], this._visiblePoints[i + 1]];
+
+      this._mainCtx.beginPath();
+      lineGen(segment);
+
+      this._mainCtx.strokeStyle = this.tempColor(
+        (data[i].y + data[i + 1].y) / 2
+      );
+      this._mainCtx.stroke();
+    }
+
+    const [min, max] = d3.extent(data, (d) => d.y);
+    const minPoints: {
+      x: number;
+      y: number;
+      point: RealPoint | AggregatedPoint;
+    }[] = [];
+    const maxPoints: {
+      x: number;
+      y: number;
+      point: RealPoint | AggregatedPoint;
+    }[] = [];
+
+    this._visiblePoints.forEach((d, index) => {
       const xPix = xS(d.x);
       const yPix = yS(d.y);
+
       if (
         xPix < this._padding.left ||
         xPix > width - this._padding.right ||
         yPix < this._padding.top ||
         yPix > height - this._padding.bottom
-      )
+      ) {
         return;
+      }
+      /* mainCtx.fillStyle = "orange"; */
       /* mainCtx.beginPath();
       mainCtx.arc(xPix, yPix, normalRadius, 0, 2 * Math.PI);
       mainCtx.fill(); */
-
-      // Draw label only if time is near the hour mark
-      const minutes = d.x.getMinutes();
-      const hours = d.x.getHours();
-
-      const visibleWidth = xS.range()[1] - xS.range()[0];
-
-      const hoursInterval =
-        visibleWidth * transform.k > 1024
-          ? 1
-          : visibleWidth * transform.k > 640
-            ? 2
-            : 3;
-
-      if (minutes === 0 && hours % hoursInterval === 0) {
-        this._mainCtx.fillStyle = this._textColor;
-        this._mainCtx.font = "1rem sans-serif";
-        this._mainCtx.textAlign = "center";
-
-        this._mainCtx.fillStyle = this._textColor;
-        this._mainCtx.beginPath();
-        this._mainCtx.arc(xPix, yPix, 4, 0, 2 * Math.PI);
-        this._mainCtx.fill();
-
-        this._mainCtx.lineWidth = 5;
-        this._mainCtx.font = "800 1rem sans-serif";
-        this._mainCtx.strokeStyle = this._bgColor;
-        this._mainCtx.fillStyle = this._textColor;
-        this._mainCtx.strokeText(d.y.toFixed(1) + "º", xPix, yPix - 20); // text above the point
-        this._mainCtx.fillText(d.y.toFixed(1) + "º", xPix, yPix - 20); // text above the point
-
-        this._mainCtx.lineWidth = 5;
-        this._mainCtx.font = "1rem sans-serif";
-        this._mainCtx.strokeStyle = this._bgColor;
-        this._mainCtx.fillStyle = this._fadeColor;
-        this._mainCtx.strokeText(d3.timeFormat("%H:%M")(d.x), xPix, yPix + 30); // text above the point
-        this._mainCtx.fillText(d3.timeFormat("%H:%M")(d.x), xPix, yPix + 30); // text above the point
-      }
 
       if ("type" in d && d.type === "agg") {
         const yMinPix = yS(d.min);
@@ -302,7 +295,36 @@ export class D3WeatherChart {
         this._mainCtx.strokeStyle = "rgba(255,165,0,0.5)";
         this._mainCtx.lineWidth = 1;
         this._mainCtx.stroke();
+      } else {
+        this._painPoint(this._visiblePoints, index, transform, {
+          x: xPix,
+          y: yPix,
+        });
       }
+
+      if (d.y === min) {
+        minPoints.push({ x: xPix, y: yPix, point: d });
+      } else if (d.y === max) {
+        maxPoints.push({ x: xPix, y: yPix, point: d });
+      }
+    });
+
+    this._mainCtx.strokeStyle = this._textColor;
+    this._mainCtx.lineWidth = 1;
+    minPoints.forEach(({ x, y, point }) => {
+      this._mainCtx.fillStyle = this.tempColor(point.y);
+      this._mainCtx.beginPath();
+      this._mainCtx.arc(x, y, 6, 0, 2 * Math.PI);
+      this._mainCtx.fill();
+      this._mainCtx.stroke();
+    });
+
+    maxPoints.forEach(({ x, y, point }) => {
+      this._mainCtx.fillStyle = this.tempColor(point.y);
+      this._mainCtx.beginPath();
+      this._mainCtx.arc(x, y, 6, 0, 2 * Math.PI);
+      this._mainCtx.fill();
+      this._mainCtx.stroke();
     });
 
     this._mainCtx.restore();
@@ -355,7 +377,7 @@ export class D3WeatherChart {
     this._hoverCtx.clip();
 
     this._hoverCtx.beginPath();
-    this._hoverCtx.fillStyle = "#53b6ddff";
+    this._hoverCtx.fillStyle = this.tempColor(d.y);
     this._hoverCtx.arc(xPix, yPix, this._hoverRadius, 0, 2 * Math.PI);
     this._hoverCtx.fill();
     this._hoverCtx.restore();
@@ -577,5 +599,71 @@ export class D3WeatherChart {
     if (scale < 3.5) return 5;
     if (scale < 6) return 2;
     return 1;
+  }
+
+  /**
+   * Draw a point on the chart
+   * @param points - Array of DataPoint objects
+   * @param index - Index of the point to draw
+   * @param transform - Zoom transform object
+   * @param point - Point to draw
+   */
+  private _painPoint(
+    points: DataPoint[],
+    index: number,
+    transform: { k: number },
+    point: {
+      x: number;
+      y: number;
+    }
+  ): void {
+    const { x: xPix, y: yPix } = point;
+    const baseInterval = 80;
+
+    const interval =
+      transform.k <= 2
+        ? baseInterval
+        : transform.k <= 4
+          ? baseInterval / 2
+          : baseInterval / 4;
+
+    const p0 = points[0];
+    const prevP = points[index - 1];
+    const currP = points[index];
+
+    const currPoints = Math.floor(
+      (this._xScale(prevP?.x ?? p0.x) - this._xScale(p0.x) - 15) / interval + 1
+    );
+
+    const expectedPoints =
+      Math.floor((this._xScale(currP.x) - this._xScale(p0.x) - 15) / interval) +
+      1;
+
+    if (expectedPoints <= currPoints) {
+      return;
+    }
+
+    this._mainCtx.strokeStyle = this._textColor;
+    this._mainCtx.fillStyle = this._bgColor;
+    this._mainCtx.font = "1rem sans-serif";
+    this._mainCtx.textAlign = "center";
+
+    this._mainCtx.fillStyle = this.tempColor(currP.y);
+    this._mainCtx.lineWidth = 1;
+    this._mainCtx.beginPath();
+    this._mainCtx.arc(xPix, yPix, 4, 0, 2 * Math.PI);
+    this._mainCtx.fill();
+    this._mainCtx.stroke();
+
+    this._mainCtx.strokeStyle = this._bgColor;
+    this._mainCtx.fillStyle = this._textColor;
+    this._mainCtx.lineWidth = 5;
+    this._mainCtx.font = "800 1rem sans-serif";
+    this._mainCtx.strokeText(currP.y.toFixed(1) + "º", xPix, yPix - 20); // text above the point
+    this._mainCtx.fillText(currP.y.toFixed(1) + "º", xPix, yPix - 20); // text above the point
+
+    this._mainCtx.font = "1rem sans-serif";
+    this._mainCtx.strokeText(d3.timeFormat("%H:%M")(currP.x), xPix, yPix + 30); // text above the point
+    this._mainCtx.fillText(d3.timeFormat("%H:%M")(currP.x), xPix, yPix + 30); // text above the point
   }
 }
