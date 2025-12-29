@@ -1,9 +1,9 @@
 import { DBConfig } from "../../config/db.conf.ts";
 
 export interface Measure {
-  temperature: number;
-  pressure: number;
-  humidity: number;
+  temperature: string;
+  pressure: string;
+  humidity: string;
   creation_date: string;
 }
 
@@ -34,7 +34,7 @@ export class WeatherHistory {
       `
             INSERT INTO "weather history" (temperature, pressure, humidity, creation_date) 
             VALUES ($1, $2, $3, $4)
-            RETURNING temperature, pressure, humidity, creation_date
+            RETURNING temperature, pressure, humidity, creation_date, measure_id
             `,
       [
         _measure.temperature,

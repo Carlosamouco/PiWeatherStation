@@ -4,34 +4,30 @@ import { WiBarometer } from "react-icons/wi";
 import { useSocketEvent, useSocketIOEvent } from "~/socket.io/socket-event";
 import WeatherIndicator from "~/weather-indicator/weather-indicator";
 import BlinkText from "~/blink-text/blink-text";
+import type { WeatherHistory } from "~/weather-chart/weather-chart";
 
 export type Trend = "up" | "down" | "stable";
 
-export interface Measure {
-  pressure: number;
-  temperature: number;
-  humidity: number;
-  creation_date: string;
-}
-
 export interface LiveData {
-  currMeasure: Measure;
-  prevMeasure?: Measure;
+  currMeasure: WeatherHistory;
+  prevMeasure?: WeatherHistory;
 }
 
 export interface LiveWeatherProps {
   weather: {
     name: string;
   };
+  onData?: (data: LiveData) => void;
 }
 
-export function LiveWeather({ weather }: LiveWeatherProps) {
+export function LiveWeather({ weather, onData }: LiveWeatherProps) {
   const [data, setData] = useState<LiveData>();
   const abortRef = useRef<AbortController | null>(null);
 
   useSocketEvent(
     "new measurement",
     useCallback((data: LiveData) => {
+      onData?.(data);
       setData(data);
     }, [])
   );
@@ -45,7 +41,9 @@ export function LiveWeather({ weather }: LiveWeatherProps) {
         const res = await fetch("/api/weather/last", {
           signal: abortRef.current.signal,
         });
-        setData(await res.json());
+        const data = await res.json();
+        onData?.(data);
+        setData(data);
         abortRef.current = null;
       } catch {}
     }, [])

@@ -39,7 +39,7 @@ export function WeatherChart({ data }: WeatherChartProps) {
 
   useEffect(() => {
     if (chart.current) {
-      chart.current.draw(processHistory(mockData));
+      chart.current.draw(processHistory(data));
     }
   }, [data, theme]);
 

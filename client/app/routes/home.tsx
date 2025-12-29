@@ -1,5 +1,5 @@
 import type { Route } from "./+types/home";
-import { LiveWeather } from "~/live-weather/live-weather";
+import { LiveWeather, type LiveData } from "~/live-weather/live-weather";
 import { LocationHeader } from "~/location-header/location-header";
 import {
   activeForecast,
@@ -7,26 +7,34 @@ import {
   WeatherTypes,
   type ForecastData,
 } from "~/forecast/forecast-data";
-import { use, useEffect, useRef } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import {
   WeatherChart,
   type WeatherHistory,
 } from "~/weather-chart/weather-chart";
-import { getCookie } from "~/user/user-context";
+import { useSocketIOEvent } from "~/socket.io/socket-event";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Meteo - Constance" },
+    { title: "RasPi Meteo" },
     { name: "description", content: "Welcome to React Router!" },
   ];
 }
 
-export async function clientLoader() {
+function fetchHistory(init?: RequestInit) {
   const now = new Date();
   const yesterday = new Date(now.getTime() - 24 * 3600 * 1000);
+
+  return fetch(
+    "/api/weather/" + yesterday.toISOString() + "/" + now.toISOString(),
+    init
+  );
+}
+
+export async function clientLoader() {
   const [ipmaResponse, weatherResponse] = await Promise.allSettled([
     fetch("https://api.ipma.pt/public-data/forecast/aggregate/1130700.json"),
-    fetch("/api/weather/" + yesterday.toISOString() + "/" + now.toISOString()),
+    fetchHistory(),
   ]);
 
   const res: {
@@ -58,6 +66,34 @@ function HomeView({ loaderData }: HomeViewProps) {
   const forecast = activeForecast(loaderData?.forecast ?? []);
   const weather = WeatherTypes[forecast?.idTipoTempo ?? 0];
   const isDayRef = useRef<boolean | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const [history, setHistory] = useState(loaderData?.history ?? []);
+
+  const onData = useCallback(
+    (data: LiveData) => {
+      if (history.at(-1)?.measure_id !== data.currMeasure.measure_id) {
+        setHistory((prev) => [...prev, data.currMeasure]);
+      }
+    },
+    [history]
+  );
+
+  useSocketIOEvent(
+    "reconnect",
+    useCallback(async () => {
+      abortRef.current = new AbortController();
+
+      try {
+        const res = await fetchHistory({
+          signal: abortRef.current.signal,
+        });
+        setHistory(await res.json());
+        abortRef.current = null;
+      } catch {}
+    }, [])
+  );
+
+  useEffect(() => () => abortRef.current?.abort(), [abortRef]);
 
   useEffect(() => {
     isDayRef.current = isDay(new Date());
@@ -73,12 +109,12 @@ function HomeView({ loaderData }: HomeViewProps) {
           ) : (
             <weather.night className="h-70 mx-auto drop-shadow-xl" />
           )}
-          <LiveWeather weather={weather} />
+          <LiveWeather weather={weather} onData={onData} />
         </div>
 
         <div className="mt-6 mb-4 flex-1 min-h-0 flex items-center">
           <div className="min-h-65 max-h-100 w-full h-full">
-            <WeatherChart data={loaderData?.history ?? []} />
+            <WeatherChart data={history} />
           </div>
         </div>
       </div>
