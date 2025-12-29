@@ -13,11 +13,6 @@ RUN apt-get update \
     python3-numpy \
  && rm -rf /var/lib/apt/lists/*
  
-# App setup
-WORKDIR /usr/src/app
-COPY package.json package-lock.json* ./
-RUN npm install
-
 FROM base AS prod
 
 # Add Raspbian key and source
@@ -32,6 +27,11 @@ FROM base AS prod
 #  && wget -P /tmp https://archive.raspberrypi.org/debian/pool/main/r/rtimulib/librtimulib7_7.2.1-3_armhf.deb \
 #  && dpkg -i /tmp/*.deb || apt-get install -f -y \
 #  && rm -rf /tmp/*.deb
+
+# App setup
+WORKDIR /usr/src/app
+COPY package.json package-lock.json* ./
+RUN npm install
 
 EXPOSE 3333
 CMD ["npm", "run", "start"]

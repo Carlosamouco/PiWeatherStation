@@ -37,9 +37,15 @@ export default class PythonControler {
     }
 
     const results = await PythonControler.RunPythonShell("test.py");
-    const measure = (
-      await WeatherHistory.addMeasure(PythonControler.ParseResults(results))
-    ).rows[0] as Measure;
+    let measure: Measure;
+    try {
+      measure = (
+        await WeatherHistory.addMeasure(PythonControler.ParseResults(results))
+      ).rows[0] as Measure;
+    } catch (error) {
+      console.log(error);
+      return;
+    }
 
     PythonControler.lastMeasure = {
       currMeasure: measure,

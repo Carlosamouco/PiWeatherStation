@@ -41,9 +41,11 @@ export function LiveWeather({ weather, onData }: LiveWeatherProps) {
         const res = await fetch("/api/weather/last", {
           signal: abortRef.current.signal,
         });
-        const data = await res.json();
-        onData?.(data);
-        setData(data);
+        if (res.ok) {
+          const data = await res.json();
+          onData?.(data);
+          setData(data);
+        }
         abortRef.current = null;
       } catch {}
     }, [])

@@ -42,13 +42,13 @@ export async function clientLoader() {
     history?: WeatherHistory[];
   } = {};
 
-  if (ipmaResponse.status === "fulfilled") {
+  if (ipmaResponse.status === "fulfilled" && ipmaResponse.value.ok) {
     try {
       res.forecast = await ipmaResponse.value.json();
     } catch {}
   }
 
-  if (weatherResponse.status === "fulfilled") {
+  if (weatherResponse.status === "fulfilled" && weatherResponse.value.ok) {
     try {
       res.history = await weatherResponse.value.json();
     } catch {}
@@ -72,7 +72,14 @@ function HomeView({ loaderData }: HomeViewProps) {
   const onData = useCallback(
     (data: LiveData) => {
       if (history.at(-1)?.measure_id !== data.currMeasure.measure_id) {
-        setHistory((prev) => [...prev, data.currMeasure]);
+        setHistory((prev) =>
+          // delete last value if it's older than 24 hours
+          prev.length > 1 &&
+          Date.now() - new Date(prev[0].creation_date).getTime() <=
+            24 * 60 * 60 * 1000
+            ? [...prev.slice(1), data.currMeasure]
+            : [...prev, data.currMeasure]
+        );
       }
     },
     [history]
@@ -87,7 +94,11 @@ function HomeView({ loaderData }: HomeViewProps) {
         const res = await fetchHistory({
           signal: abortRef.current.signal,
         });
-        setHistory(await res.json());
+
+        if (res.ok) {
+          setHistory(await res.json());
+        }
+
         abortRef.current = null;
       } catch {}
     }, [])
@@ -113,7 +124,7 @@ function HomeView({ loaderData }: HomeViewProps) {
         </div>
 
         <div className="mt-6 mb-4 flex-1 min-h-0 flex items-center">
-          <div className="min-h-65 max-h-100 w-full h-full">
+          <div className="min-h-65 w-full h-full">
             <WeatherChart data={history} />
           </div>
         </div>
