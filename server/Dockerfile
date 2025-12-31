@@ -1,17 +1,15 @@
 # Target platform (amd64 / arm32v7)
-ARG ARCH_NODE
+ARG ARCH_NODE=node:24-alpine
 
 FROM ${ARCH_NODE} AS base
 
 # Install APT dependencies
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
+RUN apk add --no-cache \
     wget \
     python3 \
-    python3-pip \
-    python3-pil \
-    python3-numpy \
- && rm -rf /var/lib/apt/lists/*
+    py3-pip \
+    py3-numpy \
+    py3-pillow
  
 FROM base AS prod
 
@@ -30,13 +28,17 @@ FROM base AS prod
 
 # App setup
 WORKDIR /usr/src/app
-COPY package.json package-lock.json* ./
-RUN npm install
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
 
 EXPOSE 3333
 CMD ["npm", "run", "start"]
 
 FROM base AS dev
+# App setup
+WORKDIR /usr/src/app
+COPY package.json package-lock.json ./
+RUN npm install
 
 EXPOSE 3333
 CMD ["npm", "run", "dev"]

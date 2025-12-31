@@ -6,7 +6,7 @@
   "author": "Carlos Samouco",
   "type": "module",
   "scripts": {
-    "start": "node ./src/server.js",
+    "start": "node ./src/server.ts",
     "dev": "node --watch-path=./src ./src/server.ts",
     "build": "tsc",
     "watch": "tsc --watch",

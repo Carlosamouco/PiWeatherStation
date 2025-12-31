@@ -26,7 +26,11 @@ services:
       - database:postgres
 
   client:
-    build: ./client
+    build:
+      context: ./client
+      target: ${BUILD_TARGET}
+      args:
+        ARCH_NODE: ${ARCH_NODE}
     volumes:
       - ./client:/app
     ports:

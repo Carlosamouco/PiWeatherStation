@@ -1,5 +1,5 @@
 # Target platform (amd64 / arm32v7)
-ARG ARCH_DB
+ARG ARCH_DB=postgres:18-alpine
 
 FROM ${ARCH_DB}
 
