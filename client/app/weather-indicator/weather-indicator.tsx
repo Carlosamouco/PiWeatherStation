@@ -6,7 +6,8 @@ export interface WeatherIndicatorProps {
   Icon?: IconType;
   label: ReactNode;
   value: ReactNode;
-  units: string;
+  units: ReactNode;
+  selected: boolean;
 }
 
 export default function WeatherIndicator({
@@ -14,13 +15,23 @@ export default function WeatherIndicator({
   value,
   Icon,
   units,
+  selected,
 }: WeatherIndicatorProps) {
   return (
-    <div className="flex flex-col rounded-lg p-2 min-w-40 bg-[color-mix(in_srgb,var(--bg-color)_85%,var(--text-color)_15%)]">
+    <div
+      className={`
+        ${selected ? "border-3" : "border-transparent"}
+        transition-border-color
+        rounded-lg
+        p-2
+        min-w-40
+        bg-[color-mix(in_srgb,var(--bg-color)_85%,var(--text-color)_15%)]
+      `}
+    >
       {Icon ? <Icon className="-ml-2 text-4xl" /> : null}
       {label}
       <div className="flex items-center text-2xl">
-        <BlinkText>
+        <BlinkText value={value}>
           {value ?? "--"}
           {units}
         </BlinkText>

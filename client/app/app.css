@@ -26,3 +26,7 @@ html.dark {
   --text-color: #e5edf5;
   color-scheme: dark;
 }
+
+button {
+  cursor: pointer;
+}

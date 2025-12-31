@@ -1,37 +1,38 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 export interface BlinkTextProps {
-  value: ReactNode;
+  value: unknown;
+  children: ReactNode;
 }
 
-export default function BlinkText({ children }: { children: ReactNode }) {
+export default function BlinkText({ children, value }: BlinkTextProps) {
   const [blink, setBlink] = useState(false);
-  const prevValueRef = useRef<ReactNode>(children);
-  const mountedRef = useRef(false);
+  const [content, setContent] = useState(children);
+  const oldValueRef = useRef(value);
 
   useEffect(() => {
-    if (!mountedRef.current) {
-      mountedRef.current = true;
+    if (oldValueRef.current === value && !blink) {
+      setContent(children);
       return;
     }
 
+    oldValueRef.current = value;
     setBlink(true);
+  }, [children, value]);
 
-    const timeout = setTimeout(() => {
-      setBlink(false);
-      prevValueRef.current = children;
-    }, 350);
-
-    return () => clearTimeout(timeout);
-  }, [children]);
+  const onTransitionEnd = () => {
+    setBlink(false);
+    setContent(children);
+  };
 
   return (
     <span
-      className={`transition-opacity duration-350 ${
+      className={`transition-opacity duration-300 ${
         blink ? "opacity-0" : "opacity-100"
       }`}
+      onTransitionEnd={onTransitionEnd}
     >
-      {prevValueRef.current ?? "--"}
+      {content}
     </span>
   );
 }

@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Route } from "./+types/home";
 import { LiveWeather, type LiveData } from "~/live-weather/live-weather";
 import { LocationHeader } from "~/location-header/location-header";
@@ -7,9 +8,10 @@ import {
   WeatherTypes,
   type ForecastData,
 } from "~/forecast/forecast-data";
-import { use, useCallback, useEffect, useRef, useState } from "react";
 import {
   WeatherChart,
+  type HistoryField,
+  type WeatherChartProps,
   type WeatherHistory,
 } from "~/weather-chart/weather-chart";
 import { useSocketIOEvent } from "~/socket.io/socket-event";
@@ -65,11 +67,14 @@ interface HomeViewProps {
 function HomeView({ loaderData }: HomeViewProps) {
   const forecast = activeForecast(loaderData?.forecast ?? []);
   const weather = WeatherTypes[forecast?.idTipoTempo ?? 0];
-  const [day, setDay] = useState<boolean | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
-  const [history, setHistory] = useState(loaderData?.history ?? []);
 
-  const onData = useCallback(
+  const [day, setDay] = useState<boolean | null>(null);
+  const [history, setHistory] = useState(loaderData?.history ?? []);
+  const [field, setField] = useState<HistoryField>("temperature");
+
+  const abortRef = useRef<AbortController | null>(null);
+
+  const onLiveData = useCallback(
     (data: LiveData) => {
       if (history.at(-1)?.measure_id !== data.currMeasure.measure_id) {
         setHistory((prev) =>
@@ -84,6 +89,10 @@ function HomeView({ loaderData }: HomeViewProps) {
     },
     [history]
   );
+
+  const onFieldSelected = useCallback((field: HistoryField) => {
+    setField(field);
+  }, []);
 
   useSocketIOEvent(
     "reconnect",
@@ -112,20 +121,27 @@ function HomeView({ loaderData }: HomeViewProps) {
 
   return (
     <div className="container mx-auto min-h-[100dvh] flex">
-      <div className="flex flex-col flex-1 mx-4 sm:mx-0">
+      <div className="flex flex-col flex-1 px-4 sm:mx-0 w-full">
         <div className="mt-4">
           <LocationHeader />
           {day ? (
-            <weather.day className="h-70 mx-auto drop-shadow-xl" />
+            <weather.day className="h-70 w-full mx-auto drop-shadow-xl" />
           ) : (
-            <weather.night className="h-70 mx-auto drop-shadow-xl" />
+            <weather.night className="h-70 w-full mx-auto drop-shadow-xl" />
           )}
-          <LiveWeather weather={weather} onData={onData} />
+          <LiveWeather
+            weather={weather}
+            selectedField={field}
+            onData={onLiveData}
+            onFieldSelected={onFieldSelected}
+          />
         </div>
 
-        <div className="mt-6 mb-4 flex-1 min-h-0 flex items-center">
-          <div className="min-h-65 w-full h-full">
-            <WeatherChart data={history} />
+        <div className="mt-6 mb-4 flex-1 min-h-0 flex flex-col items-center">
+          <div className="h-full w-full content-center">
+            <div className="min-h-50 max-h-[30dvh] h-full w-full relative">
+              <WeatherChart data={history} field={field} />
+            </div>
           </div>
         </div>
       </div>

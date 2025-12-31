@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { WiHumidity } from "react-icons/wi";
-import { WiBarometer } from "react-icons/wi";
+import { WiHumidity, WiBarometer, WiThermometer } from "react-icons/wi";
 import { useSocketEvent, useSocketIOEvent } from "~/socket.io/socket-event";
 import WeatherIndicator from "~/weather-indicator/weather-indicator";
 import BlinkText from "~/blink-text/blink-text";
-import type { WeatherHistory } from "~/weather-chart/weather-chart";
-
-export type Trend = "up" | "down" | "stable";
+import type {
+  HistoryField,
+  WeatherHistory,
+} from "~/weather-chart/weather-chart";
 
 export interface LiveData {
   currMeasure: WeatherHistory;
@@ -17,12 +17,39 @@ export interface LiveWeatherProps {
   weather: {
     name: string;
   };
+  selectedField: HistoryField;
   onData?: (data: LiveData) => void;
+  onFieldSelected?: (field: HistoryField) => void;
 }
 
-export function LiveWeather({ weather, onData }: LiveWeatherProps) {
+export function LiveWeather({
+  weather,
+  selectedField,
+  onData,
+  onFieldSelected,
+}: LiveWeatherProps) {
   const [data, setData] = useState<LiveData>();
   const abortRef = useRef<AbortController | null>(null);
+  const historyFields = [
+    {
+      Icon: WiThermometer,
+      label: "Temperatura",
+      field: "temperature",
+      units: "ºC",
+    },
+    {
+      Icon: WiHumidity,
+      label: "Humidade",
+      field: "humidity",
+      units: "%",
+    },
+    {
+      Icon: WiBarometer,
+      label: "Pressão",
+      field: "pressure",
+      units: "hPa",
+    },
+  ] as const;
 
   useSocketEvent(
     "new measurement",
@@ -51,34 +78,57 @@ export function LiveWeather({ weather, onData }: LiveWeatherProps) {
     }, [])
   );
 
+  const selectCard = useCallback((field: HistoryField) => {
+    onFieldSelected?.(field);
+  }, []);
+
   useEffect(() => () => abortRef.current?.abort(), [abortRef]);
 
   return (
     <>
-      <div className="flex flex-row flex">
-        <BlinkText>
-          <span className="text-7xl">
-            {data?.currMeasure.temperature ?? "--"}
-          </span>
-          <span className="self-start text-2xl">ºC</span>
-        </BlinkText>
-      </div>
+      <BlinkText value={data?.currMeasure}>
+        <span className="text-7xl">
+          {data?.currMeasure[selectedField] ?? "--"}
+        </span>
+        <span className="self-start text-2xl">
+          {historyFields.find((t) => t.field === selectedField)?.units}
+        </span>
+      </BlinkText>
 
       <div className="text-4xl font-extralight">{weather.name}</div>
 
-      <div className="flex flex-row gap-3 mt-4 overflow-x-auto">
-        <WeatherIndicator
-          Icon={WiHumidity}
-          label="Humidade"
-          value={data?.currMeasure.humidity}
-          units="%"
-        />
-        <WeatherIndicator
-          Icon={WiBarometer}
-          label="Pressão"
-          value={data?.currMeasure.pressure}
-          units="hPa"
-        />
+      <div className="flex flex-row gap-3 mt-4 snap-x snap-mandatory overflow-x-auto w-full min-w-0">
+        {historyFields.map(({ Icon, label, field, units }, index, list) => (
+          <button
+            className={
+              "text-left " +
+              (index === 0
+                ? "snap-start"
+                : index < list.length - 1
+                  ? "snap-center"
+                  : "snap-end")
+            }
+            key={field}
+            ref={(el) => {
+              if (el && selectedField === field) {
+                el.scrollIntoView({
+                  behavior: "smooth",
+                  block: "nearest",
+                  inline: "center",
+                });
+              }
+            }}
+            onClick={() => selectCard(field)}
+          >
+            <WeatherIndicator
+              Icon={Icon}
+              label={label}
+              value={data?.currMeasure[field]}
+              units={units}
+              selected={selectedField === field}
+            />
+          </button>
+        ))}
       </div>
     </>
   );
