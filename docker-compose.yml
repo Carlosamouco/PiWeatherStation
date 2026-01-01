@@ -45,7 +45,7 @@ services:
       args:
         ARCH_NODE: ${ARCH_NODE}
     volumes:
-      - ./server/src:/usr/src/app/src
+      - ./server/src:/app
     ports:
       - "3333:3333"
     links:
