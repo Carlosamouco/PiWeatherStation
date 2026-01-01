@@ -32,15 +32,14 @@ export class WeatherHistory {
   static addMeasure(_measure: Measure) {
     return DBConfig.init().pool.query(
       `
-            INSERT INTO "weather history" (temperature, pressure, humidity, creation_date) 
-            VALUES ($1, $2, $3, $4)
-            RETURNING temperature, pressure, humidity, creation_date, measure_id
+            INSERT INTO "weather history" (temperature, pressure, humidity) 
+            VALUES ($1, $2, $3)
+            RETURNING temperature, pressure, humidity, measure_id
             `,
       [
         _measure.temperature,
         _measure.pressure,
         _measure.humidity,
-        _measure.creation_date,
       ]
     );
   }

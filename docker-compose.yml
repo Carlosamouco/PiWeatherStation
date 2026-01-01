@@ -44,6 +44,12 @@ services:
         ARCH_NODE: ${ARCH_NODE}
     ports:
       - "3333:3333"
+    privileged: true
+    user: "0:0"
+    devices:
+      - "/dev/i2c-1:/dev/i2c-1"
+    group_add:
+      - "988" # getent group i2c | cut -d: -f3
     links:
       - database:postgres
 

@@ -32,7 +32,7 @@ CREATE TABLE "weather history" (
     temperature numeric(5,2) NOT NULL,
     pressure numeric(7,2) NOT NULL,
     humidity numeric(5,2) NOT NULL,
-    creation_date timestamp with time zone DEFAULT now()
+    creation_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 
