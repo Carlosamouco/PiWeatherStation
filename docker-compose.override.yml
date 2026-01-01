@@ -1,0 +1,8 @@
+services:
+  server:
+    volumes:
+      - ./server:/app
+
+  client:
+    volumes:
+      - ./client:/app

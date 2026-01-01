@@ -31,8 +31,6 @@ services:
       target: ${BUILD_TARGET}
       args:
         ARCH_NODE: ${ARCH_NODE}
-    volumes:
-      - ./client:/app
     ports:
       - "4200:4200"
     links:
@@ -44,8 +42,6 @@ services:
       target: ${BUILD_TARGET}
       args:
         ARCH_NODE: ${ARCH_NODE}
-    volumes:
-      - ./server/src:/app
     ports:
       - "3333:3333"
     links:
