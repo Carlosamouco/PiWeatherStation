@@ -1,11 +1,11 @@
 import express from "express";
 import { createServer } from "node:http";
 import { hostname } from "node:os";
-import { RoutesConfig } from "./config/routes.conf.ts";
-import { DBConfig } from "./config/db.conf.ts";
-import { Routes } from "./routes/index.ts";
-import { Scheduler } from "./python/index.ts";
-import { SocketControler } from "./socket.io/index.ts";
+import { RoutesConfig } from "./config/routes.conf.js";
+import { DBConfig } from "./config/db.conf.js";
+import { Routes } from "./routes/index.js";
+import { Scheduler } from "./python/index.js";
+import { SocketControler } from "./socket.io/index.js";
 
 const PORT = process.env.PORT || 3333;
 const app = express();

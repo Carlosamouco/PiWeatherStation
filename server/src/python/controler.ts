@@ -1,6 +1,6 @@
 import { PythonShell } from "python-shell";
-import { type Measure, WeatherHistory } from "../api/model/weather.ts";
-import { SocketControler } from "./../socket.io/index.ts";
+import { type Measure, WeatherHistory } from "../api/model/weather.js";
+import { SocketControler } from "./../socket.io/index.js";
 
 export default class PythonControler {
   public static lastMeasure: { currMeasure: Measure; prevMeasure: Measure };

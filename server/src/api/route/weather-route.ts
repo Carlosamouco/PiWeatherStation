@@ -1,7 +1,7 @@
 "use strict";
 
 import * as express from "express";
-import { WeatherController } from "../controller/weather-controller.ts";
+import { WeatherController } from "../controller/weather-controller.js";
 
 export class WeatherRoutes {
   static init(router: express.Router) {

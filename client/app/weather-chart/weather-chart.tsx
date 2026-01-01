@@ -117,7 +117,7 @@ export function WeatherChart({ data, field }: WeatherChartProps) {
     if (chart.current && data) {
       chart.current.units = getUnits();
       ((chart.current.colorScale = getColorScale()),
-        chart.current.draw(processHistory(mockData, field)));
+        chart.current.draw(processHistory(data, field)));
     }
   }, [data, theme, field]);
 
