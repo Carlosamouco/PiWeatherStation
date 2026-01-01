@@ -2,6 +2,7 @@
 src/**/*.js
 src/**/*.js.map
 src/**/*.d.ts
+!src/sensor/driver/simulator.js
 
 # Misc
 node_modules/

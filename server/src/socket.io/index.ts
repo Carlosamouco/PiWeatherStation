@@ -1,6 +1,6 @@
 import { Server as IOServer } from "socket.io";
 import { Server } from "node:http";
-import PythonControler from "./../python/controler.js";
+import PythonControler from "../sensor/controler.js";
 
 export class SocketControler {
   public static io: IOServer;

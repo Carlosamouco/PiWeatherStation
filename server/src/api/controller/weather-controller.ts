@@ -1,6 +1,6 @@
 import express from "express";
 import { WeatherHistory } from "../model/weather.js";
-import PythonControler from "../../python/controler.js";
+import PythonControler from "../../sensor/controler.js";
 
 export class WeatherController {
   static getAll(_: express.Request, res: express.Response): void {
