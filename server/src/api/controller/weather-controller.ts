@@ -1,6 +1,6 @@
 import express from "express";
 import { WeatherHistory } from "../model/weather.js";
-import PythonControler from "../../sensor/controler.js";
+import Controler from "../../sensor/controler.js";
 
 export class WeatherController {
   static getAll(_: express.Request, res: express.Response): void {
@@ -16,8 +16,8 @@ export class WeatherController {
   }
 
   static getLast(_: express.Request, res: express.Response): void {
-    if (PythonControler.lastMeasure) {
-      res.status(200).json(PythonControler.lastMeasure);
+    if (Controler.lastMeasure) {
+      res.status(200).json(Controler.lastMeasure);
     } else {
       res.status(400).json("No data available");
     }

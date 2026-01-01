@@ -12,7 +12,7 @@ const execDriverArgs: [string, string[]] =
     ? ["./bme280", []]
     : ["node", ["./simulator.js"]];
 
-export default class PythonControler {
+export default class Controler {
   public static lastMeasure: { currMeasure: Measure; prevMeasure: Measure };
 
   private static execDriver(): Promise<string> {
@@ -47,21 +47,21 @@ export default class PythonControler {
   }
 
   public static async MakeMeasurement(): Promise<void> {
-    if (!PythonControler.lastMeasure) {
+    if (!Controler.lastMeasure) {
       // discard first measurement
-      await PythonControler.execDriver();
+      await Controler.execDriver();
     }
 
-    const results = await PythonControler.execDriver();
+    const results = await Controler.execDriver();
     const measure = (
-      await WeatherHistory.addMeasure(PythonControler.ParseResults(results))
+      await WeatherHistory.addMeasure(Controler.ParseResults(results))
     ).rows[0] as Measure;
 
-    PythonControler.lastMeasure = {
+    Controler.lastMeasure = {
       currMeasure: measure,
-      prevMeasure: PythonControler.lastMeasure?.currMeasure,
+      prevMeasure: Controler.lastMeasure?.currMeasure,
     };
 
-    SocketControler.io.emit("new measurement", PythonControler.lastMeasure);
+    SocketControler.io.emit("new measurement", Controler.lastMeasure);
   }
 }

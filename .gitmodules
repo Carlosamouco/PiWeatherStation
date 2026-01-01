@@ -1,0 +1,3 @@
+[submodule "server/src/sensor/driver/bme280-src"]
+	path = server/bme280/bme280_api
+	url = https://github.com/boschsensortec/BME280_SensorAPI.git

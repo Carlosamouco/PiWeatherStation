@@ -1,6 +1,6 @@
 import { Server as IOServer } from "socket.io";
 import { Server } from "node:http";
-import PythonControler from "../sensor/controler.js";
+import Controler from "../sensor/controler.js";
 
 export class SocketControler {
   public static io: IOServer;
@@ -9,8 +9,8 @@ export class SocketControler {
     this.io = new IOServer(server, { path: "/live" });
 
     this.io.on("connection", (socket) => {
-      if (PythonControler.lastMeasure) {
-        socket.emit("new measurement", PythonControler.lastMeasure);
+      if (Controler.lastMeasure) {
+        socket.emit("new measurement", Controler.lastMeasure);
       }
     });
   }

@@ -1,8 +1,16 @@
-import PythonControler from "./controler.js";
+import Controler from "./controler.js";
 
 export class Scheduler {
   static init(): void {
-    PythonControler.MakeMeasurement();
-    setInterval(PythonControler.MakeMeasurement, 60000);
+    const safeMeasure = () => {
+      try {
+        Controler.MakeMeasurement();
+      } catch (error) {
+        console.error("Measurement failed:", error);
+      }
+    };
+
+    safeMeasure();
+    setInterval(safeMeasure, 60000);
   }
 }
