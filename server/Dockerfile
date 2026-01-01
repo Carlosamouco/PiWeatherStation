@@ -1,7 +1,8 @@
 ARG ARCH_NODE=node:24-alpine
 
-FROM --platform=linux/arm64 gcc:latest AS bme280-build
-COPY ./bme280 /app/
+FROM arm64v8/gcc AS bme280-build
+COPY ./bme280/ /app/
+WORKDIR /app/
 RUN gcc -O3 \
   ./main.c \
   ./bme280_api/bme280.c \
@@ -36,6 +37,7 @@ COPY package*.json /app/
 COPY --from=production-dependencies-env /app/node_modules /app/node_modules
 COPY --from=build-env /app/output /app/src
 COPY --from=bme280-build /app/bme280 /app/src/sensor/driver/
+RUN apk add --no-cache gcompat
 RUN chmod +x /app/src/sensor/driver/bme280
 WORKDIR /app
 ENV NODE_ENV=production
