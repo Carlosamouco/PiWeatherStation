@@ -1,4 +1,4 @@
-import PythonControler from "./controler.ts";
+import PythonControler from "./controler.js";
 
 export class Scheduler {
   static init(): void {

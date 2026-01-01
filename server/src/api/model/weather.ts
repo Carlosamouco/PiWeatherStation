@@ -1,4 +1,4 @@
-import { DBConfig } from "../../config/db.conf.ts";
+import { DBConfig } from "../../config/db.conf.js";
 
 export interface Measure {
   temperature: string;

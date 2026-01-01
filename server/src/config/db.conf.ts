@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 
-import dbconf from "../constants/db.ts";
+import dbconf from "../constants/db.js";
 
 export class DBConfig {
   private static instance: DBConfig;

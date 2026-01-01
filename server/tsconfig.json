@@ -13,9 +13,7 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "noUnusedParameters": true,
-    "noUnusedLocals": true,
-    "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noUnusedLocals": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
