@@ -1,23 +1,25 @@
-import { PythonShell } from "python-shell";
+import { execFile } from "node:child_process";
 import { type Measure, WeatherHistory } from "../api/model/weather.js";
 import { SocketControler } from "./../socket.io/index.js";
 
 export default class PythonControler {
   public static lastMeasure: { currMeasure: Measure; prevMeasure: Measure };
 
-  private static RunPythonShell(script: string): Promise<string[]> {
-    return PythonShell.run(script, {
-      mode: "text",
+  private static RunPythonShell(script: string): Promise<string> {
+    const options = {
       scriptPath: "./src/python/scripts/",
-      args: [],
+    };
+
+    return new Promise((resolve, reject) => {
+      execFile(script, [], { cwd: options.scriptPath }, (err, stdout) => {
+        if (err) reject(err);
+        resolve(stdout);
+      });
     });
   }
 
-  private static ParseResults(results: string[]): Measure {
-    if (results.length != 1) {
-      throw `Invalide results length. Expected 1 but found ${results.length}.`;
-    }
-    const measure = JSON.parse(results[0]);
+  private static ParseResults(results: string): Measure {
+    const measure = JSON.parse(results);
 
     ["temperature", "pressure", "humidity"].forEach((key) => {
       const value = Number.parseFloat(measure[key]);
@@ -33,10 +35,10 @@ export default class PythonControler {
   public static async MakeMeasurement(): Promise<void> {
     if (!PythonControler.lastMeasure) {
       // discard first measurement
-      await PythonControler.RunPythonShell("test.py");
+      await PythonControler.RunPythonShell("./bme280");
     }
 
-    const results = await PythonControler.RunPythonShell("test.py");
+    const results = await PythonControler.RunPythonShell("./bme280");
     let measure: Measure;
     try {
       measure = (
