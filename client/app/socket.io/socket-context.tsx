@@ -11,15 +11,15 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const s = io({ path: "/api/live" });
+    const s = io({ path: "/api/live", autoConnect: true, reconnection: true });
     setSocket(s);
 
     const handleBeforeUnload = () => s.disconnect();
     window.addEventListener("beforeunload", handleBeforeUnload);
 
-    const handlePageShow = (event: PageTransitionEvent) => {
-      if (event.persisted) {
-        s.connect();
+    const handlePageShow = () => {
+      if (socket && !socket.connected) {
+        socket.connect();
       }
     };
     window.addEventListener("pageshow", handlePageShow);
