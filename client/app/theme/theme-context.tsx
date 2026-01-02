@@ -3,12 +3,13 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { useUserSettings } from "~/user/user-context";
 
 const ThemeContext = createContext<
-  ["dark" | "light", (theme: "dark" | "light") => void] | null
+  readonly ["dark" | "light", (theme: "dark" | "light") => void] | null
 >(null);
 
 export function useTheme() {
@@ -25,6 +26,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useUserSettings();
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
+  const loadTheme = useCallback((theme: "dark" | "light") => {
+    document.documentElement.classList.remove("dark", "light");
+    document.documentElement.classList.add(theme);
+    setTheme(theme);
+    setSettings({ ...settings, theme: theme });
+  }, []);
+
+  const contextValue = useMemo(
+    () => [theme, loadTheme] as const,
+    [theme, loadTheme]
+  );
+
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
 
@@ -37,14 +50,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         : "light";
 
     loadTheme(theme);
-  }, []);
+  }, [loadTheme]);
 
-  const loadTheme = useCallback((theme: "dark" | "light") => {
-    document.documentElement.classList.remove("dark", "light");
-    document.documentElement.classList.add(theme);
-    setTheme(theme);
-    setSettings({ ...settings, theme: theme });
-  }, []);
-
-  return <ThemeContext value={[theme, loadTheme]}>{children}</ThemeContext>;
+  return <ThemeContext value={contextValue}>{children}</ThemeContext>;
 }

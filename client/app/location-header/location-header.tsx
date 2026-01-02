@@ -16,11 +16,7 @@ export function LocationHeader() {
 
   useEffect(() => {
     setDateTime(new Date());
-
-    const interval = setInterval(() => {
-      setDateTime(new Date());
-    }, 1000);
-
+    const interval = setInterval(() => setDateTime(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
 

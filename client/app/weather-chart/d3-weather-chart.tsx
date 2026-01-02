@@ -19,10 +19,10 @@ export class D3WeatherChart {
   colorScale: d3.ScaleLinear<string, string, never>;
 
   private readonly _offset = {
-    top: 32,
-    right: 20,
-    bottom: 32,
-    left: 20,
+    top: 33,
+    right: 31,
+    bottom: 33,
+    left: 31,
   } as const;
 
   private _container: d3.Selection<HTMLElement, unknown, null, undefined>;
@@ -203,26 +203,34 @@ export class D3WeatherChart {
     this._mainCtx.rect(0, 0, width, height);
     this._mainCtx.clip();
 
+    const [minY, maxY] = d3.extent(this._data, (d) => d.y);
+
     // 1. Create Vertical Gradient for the Line
     // We map the gradient to the Y-coordinates of our temperature range
     const y0 = this.colorScale.domain().at(1)!;
     const y1 = this.colorScale.domain().at(-2)!;
-    const gradient = this._mainCtx.createLinearGradient(0, sY(y0), 0, sY(y1));
 
-    this.colorScale.domain().forEach((t) => {
-      if (t === -Infinity || t === Infinity) return;
+    if (minY === maxY) {
+      this._mainCtx.strokeStyle = this.colorScale(maxY!);
+    } else {
+      const gradient = this._mainCtx.createLinearGradient(0, sY(y0), 0, sY(y1));
 
-      // Offset must be between 0 and 1
-      const offet = (t - y0) / (y1 - y0);
-      if (offet >= 0 && offet <= 1) {
-        gradient.addColorStop(offet, this.colorScale(t));
-      }
-    });
+      this.colorScale.domain().forEach((t) => {
+        if (t === -Infinity || t === Infinity) return;
+
+        // Offset must be between 0 and 1
+        const offet = (t - y0) / (y1 - y0);
+        if (offet >= 0 && offet <= 1) {
+          gradient.addColorStop(offet, this.colorScale(t));
+        }
+      });
+
+      this._mainCtx.strokeStyle = gradient;
+    }
 
     // 2. Draw the Line (Single Path = High Performance)
     this._mainCtx.beginPath();
     this._mainCtx.lineWidth = Math.min(1.35 + transform.k * 0.15, 2);
-    this._mainCtx.strokeStyle = gradient;
     this._mainCtx.lineJoin = "round"; // Smoother corners
 
     const lineGen = d3
@@ -237,26 +245,32 @@ export class D3WeatherChart {
 
     // 3. Draw Points & Labels (Using your deterministic anchor logic)
     const interval = this._getPointInterval(transform);
-    const [minY, maxY] = d3.extent(this._data, (d) => d.y);
 
     // Pre-calculate p0X for your anchor logic
-    const p0X = this._scale.sX(this._data[0].x);
+    const p0X = this._scale.sX(this._data.at(-1)!.x);
     let lastPx = p0X;
 
-    this._data.forEach((d, i) => {
+    for (let i = this._data.length - 1; i >= 0; i--) {
+      const d = this._data[i];
+
       const xPix = sX(d.x);
       const yPix = sY(d.y);
 
       // Optimization: Skip off-screen points
-      if (xPix < -20 || xPix > width + 20) return;
+      if (xPix < -20 || xPix > width + 20) continue;
 
-      const prevX = i > 0 ? this._scale!.sX(this._data[i - 1].x) : p0X;
+      const prevX = this._scale!.sX(
+        this._data[i < this._data.length - 1 ? i + 1 : i].x
+      );
       const pX = this._scale!.sX(d.x);
 
-      const currSlot = Math.floor((prevX - p0X - 15) / interval) + 1;
-      const nextSlot = Math.floor((pX - p0X - 15) / interval) + 1;
+      const prevSlot = Math.floor((p0X - prevX) / interval) + 1;
+      const nextSlot = Math.floor((p0X - pX) / interval) + 1;
 
-      if (nextSlot > currSlot && pX - lastPx > interval - 1) {
+      if (
+        lastPx - pX === 0 ||
+        (nextSlot > prevSlot && lastPx - pX > interval - 1)
+      ) {
         lastPx = pX;
         this._drawPoint(d, { xPix, yPix });
       }
@@ -265,7 +279,7 @@ export class D3WeatherChart {
       if (d.y === minY || d.y === maxY) {
         this._drawCircle(xPix, yPix, d.y, true);
       }
-    });
+    }
 
     this._mainCtx.restore();
   }

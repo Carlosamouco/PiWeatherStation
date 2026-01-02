@@ -69,11 +69,11 @@ const humidityColorScale = d3
   .domain([-Infinity, 0, 20, 40, 60, 80, 100, Infinity])
   .range([
     "#FF8F00", // -Infinity
-    "#FF8F00", // 0-20%
-    "#DCE775", // 40%:
-    "#4CAF50", // 60%:
-    "#00B0FF", // 80%
-    "#2962FF", // 100%
+    "#FF8F00", // 0%
+    "#DCE775", // 20%:
+    "#4CAF50", // 40%:
+    "#00B0FF", // 60%
+    "#2962FF", // 80%
     "#1A237E", // 100%
     "#1A237E", // Infinity
   ]);

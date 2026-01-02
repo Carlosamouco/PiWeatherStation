@@ -1,4 +1,10 @@
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 import { useRouteLoaderData } from "react-router";
 
 export function getCookie(name: string) {
@@ -15,7 +21,7 @@ export interface UserSettings {
 }
 
 const UserSettingsContext = createContext<
-  [UserSettings, (userPrefs: UserSettings) => void] | null
+  readonly [UserSettings, (userPrefs: UserSettings) => void] | null
 >(null);
 
 export function useUserSettings() {
@@ -38,15 +44,16 @@ export function UserSettingsProvider({
   const [prefs, setPrefs] = useState<UserSettings>(
     useRouteLoaderData("root") ?? { theme: null }
   );
-
-  const setUserSettings = (settings: UserSettings) => {
+  const setUserSettings = useCallback((settings: UserSettings) => {
     setPrefs(settings);
     setCookie("user-prefs", JSON.stringify(settings));
-  };
+  }, []);
+  const contextValue = useMemo(
+    () => [prefs, setUserSettings] as const,
+    [prefs, setUserSettings]
+  );
 
   return (
-    <UserSettingsContext value={[prefs, setUserSettings]}>
-      {children}
-    </UserSettingsContext>
+    <UserSettingsContext value={contextValue}>{children}</UserSettingsContext>
   );
 }

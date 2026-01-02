@@ -11,7 +11,6 @@ import {
 import {
   WeatherChart,
   type HistoryField,
-  type WeatherChartProps,
   type WeatherHistory,
 } from "~/weather-chart/weather-chart";
 import { useSocketIOEvent } from "~/socket.io/socket-event";
@@ -74,21 +73,19 @@ function HomeView({ loaderData }: HomeViewProps) {
 
   const abortRef = useRef<AbortController | null>(null);
 
-  const onLiveData = useCallback(
-    (data: LiveData) => {
-      if (history.at(-1)?.measure_id !== data.currMeasure.measure_id) {
-        setHistory((prev) =>
-          // delete last value if it's older than 24 hours
-          prev.length > 1 &&
-          Date.now() - new Date(prev[0].creation_date).getTime() <=
-            24 * 60 * 60 * 1000
-            ? [...prev.slice(1), data.currMeasure]
-            : [...prev, data.currMeasure]
-        );
+  const onLiveData = useCallback((data: LiveData) => {
+    setHistory((prev) => {
+      if (prev.at(-1)?.measure_id === data.currMeasure.measure_id) {
+        return prev;
       }
-    },
-    [history]
-  );
+      // delete last value if it's older than 24 hours
+      return prev.length > 0 &&
+        Date.now() - new Date(prev[0].creation_date).getTime() >=
+          24 * 60 * 60 * 1000
+        ? [...prev.slice(1), data.currMeasure]
+        : [...prev, data.currMeasure];
+    });
+  }, []);
 
   const onFieldSelected = useCallback((field: HistoryField) => {
     setField(field);
@@ -113,7 +110,7 @@ function HomeView({ loaderData }: HomeViewProps) {
     }, [])
   );
 
-  useEffect(() => () => abortRef.current?.abort(), [abortRef]);
+  useEffect(() => () => abortRef.current?.abort(), []);
 
   useEffect(() => {
     setDay(isDay(new Date()));
