@@ -253,25 +253,24 @@ export class D3WeatherChart {
     for (let i = this._data.length - 1; i >= 0; i--) {
       const d = this._data[i];
 
+      const pX = this._scale!.sX(d.x);
+      const prevSlot = Math.floor((p0X - lastPx) / interval) + 1;
+      const nextSlot = Math.floor((p0X - pX) / interval) + 1;
+
+      if (
+        lastPx - pX === 0 ||
+        (nextSlot > prevSlot && lastPx - pX - 1 > interval)
+      ) {
+        lastPx = pX;
+      }
+
       const xPix = sX(d.x);
       const yPix = sY(d.y);
 
       // Optimization: Skip off-screen points
       if (xPix < -20 || xPix > width + 20) continue;
 
-      const prevX = this._scale!.sX(
-        this._data[i < this._data.length - 1 ? i + 1 : i].x
-      );
-      const pX = this._scale!.sX(d.x);
-
-      const prevSlot = Math.floor((p0X - prevX) / interval) + 1;
-      const nextSlot = Math.floor((p0X - pX) / interval) + 1;
-
-      if (
-        lastPx - pX === 0 ||
-        (nextSlot > prevSlot && lastPx - pX > interval - 1)
-      ) {
-        lastPx = pX;
+      if (lastPx === pX) {
         this._drawPoint(d, { xPix, yPix });
       }
 

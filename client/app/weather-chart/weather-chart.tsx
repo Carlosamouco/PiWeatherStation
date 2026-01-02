@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
-import { D3WeatherChart, type DataPoint } from "./d3-weather-chart";
 import { useTheme } from "~/theme/theme-context";
+import { D3WeatherChart, type DataPoint } from "./d3-weather-chart";
+import { calculateSeaLevelPressure } from "~/live-weather/live-weather";
 
 import mockData from "./data.json";
 
@@ -117,7 +118,7 @@ export function WeatherChart({ data, field }: WeatherChartProps) {
     if (chart.current && data) {
       chart.current.units = getUnits();
       ((chart.current.colorScale = getColorScale()),
-        chart.current.draw(processHistory(data, field)));
+        chart.current.draw(processHistory(mockData, field)));
     }
   }, [data, theme, field]);
 
@@ -166,18 +167,6 @@ export function WeatherChart({ data, field }: WeatherChartProps) {
   );
 }
 
-function calculateSeaLevelPressure(
-  rawPressure: number,
-  tempC: number,
-  altitude: number = 210
-) {
-  // Standard barometric formula for altitude compensation
-  const ratio = 1 - (0.0065 * altitude) / (tempC + 0.0065 * altitude + 273.15);
-  const seaLevelPressure = rawPressure * Math.pow(ratio, -5.257);
-
-  return parseFloat(seaLevelPressure.toFixed(1));
-}
-
 function processHistory(
   data: WeatherHistory[],
   kind: WeatherChartProps["field"]
@@ -188,8 +177,7 @@ function processHistory(
     if (kind === "pressure") {
       y = calculateSeaLevelPressure(
         Number.parseFloat(d.pressure),
-        Number.parseFloat(d.temperature),
-        179.5
+        Number.parseFloat(d.temperature)
       );
     }
 

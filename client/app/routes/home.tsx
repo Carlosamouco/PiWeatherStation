@@ -122,9 +122,9 @@ function HomeView({ loaderData }: HomeViewProps) {
         <div className="mt-4">
           <LocationHeader />
           {day ? (
-            <weather.day className="h-70 w-full mx-auto drop-shadow-xl" />
+            <weather.day className="max-h-70 min-h-50 h-[30dvw] w-full mx-auto drop-shadow-xl" />
           ) : (
-            <weather.night className="h-70 w-full mx-auto drop-shadow-xl" />
+            <weather.night className="max-h-70 min-h-50 h-[30dvw] w-full mx-auto drop-shadow-xl" />
           )}
           <LiveWeather
             weather={weather}
@@ -136,7 +136,7 @@ function HomeView({ loaderData }: HomeViewProps) {
 
         <div className="mt-6 mb-4 flex-1 min-h-0 flex flex-col items-center">
           <div className="h-full w-full content-center">
-            <div className="min-h-50 max-h-[30dvh] h-full w-full relative">
+            <div className="min-h-full max-h-70 h-[60dvh] w-full relative">
               <WeatherChart data={history} field={field} />
             </div>
           </div>

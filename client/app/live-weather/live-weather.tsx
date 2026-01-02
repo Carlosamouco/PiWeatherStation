@@ -22,13 +22,25 @@ export interface LiveWeatherProps {
   onFieldSelected?: (field: HistoryField) => void;
 }
 
+export function calculateSeaLevelPressure(
+  rawPressure: number,
+  tempC: number,
+  altitude: number = 179.5
+) {
+  // Standard barometric formula for altitude compensation
+  const ratio = 1 - (0.0065 * altitude) / (tempC + 0.0065 * altitude + 273.15);
+  const seaLevelPressure = rawPressure * Math.pow(ratio, -5.257);
+
+  return parseFloat(seaLevelPressure.toFixed(1));
+}
+
 export function LiveWeather({
   weather,
   selectedField,
   onData,
   onFieldSelected,
 }: LiveWeatherProps) {
-  const [data, setData] = useState<LiveData>();
+  const [data, setData] = useState<WeatherHistory>();
   const abortRef = useRef<AbortController | null>(null);
   const historyFields = useMemo(
     () =>
@@ -59,8 +71,18 @@ export function LiveWeather({
     "new measurement",
     useCallback(
       (data: LiveData) => {
+        const { pressure, temperature } = data.currMeasure;
+
+        const seaLvlPressure = calculateSeaLevelPressure(
+          Number.parseFloat(pressure),
+          Number.parseFloat(temperature)
+        );
+
         onData?.(data);
-        setData(data);
+        setData({
+          ...data.currMeasure,
+          pressure: seaLvlPressure.toString(),
+        });
       },
       [onData]
     )
@@ -94,10 +116,8 @@ export function LiveWeather({
 
   return (
     <>
-      <BlinkText value={data?.currMeasure}>
-        <span className="text-7xl">
-          {data?.currMeasure[selectedField] ?? "--"}
-        </span>
+      <BlinkText value={data}>
+        <span className="text-7xl">{data?.[selectedField] ?? "--"}</span>
         <span className="self-start text-2xl">
           {historyFields.find((t) => t.field === selectedField)?.units}
         </span>
@@ -131,7 +151,7 @@ export function LiveWeather({
             <WeatherIndicator
               Icon={Icon}
               label={label}
-              value={data?.currMeasure[field]}
+              value={data?.[field]}
               units={units}
               selected={selectedField === field}
             />
