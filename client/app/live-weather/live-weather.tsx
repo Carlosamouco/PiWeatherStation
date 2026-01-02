@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { WiHumidity, WiBarometer, WiThermometer } from "react-icons/wi";
 import { useSocketEvent, useSocketIOEvent } from "~/socket.io/socket-event";
 import WeatherIndicator from "~/weather-indicator/weather-indicator";
@@ -30,33 +30,40 @@ export function LiveWeather({
 }: LiveWeatherProps) {
   const [data, setData] = useState<LiveData>();
   const abortRef = useRef<AbortController | null>(null);
-  const historyFields = [
-    {
-      Icon: WiThermometer,
-      label: "Temperatura",
-      field: "temperature",
-      units: "ºC",
-    },
-    {
-      Icon: WiHumidity,
-      label: "Humidade",
-      field: "humidity",
-      units: "%",
-    },
-    {
-      Icon: WiBarometer,
-      label: "Pressão",
-      field: "pressure",
-      units: "hPa",
-    },
-  ] as const;
+  const historyFields = useMemo(
+    () =>
+      [
+        {
+          Icon: WiThermometer,
+          label: "Temperatura",
+          field: "temperature",
+          units: "ºC",
+        },
+        {
+          Icon: WiHumidity,
+          label: "Humidade",
+          field: "humidity",
+          units: "%",
+        },
+        {
+          Icon: WiBarometer,
+          label: "Pressão",
+          field: "pressure",
+          units: "hPa",
+        },
+      ] as const,
+    []
+  );
 
   useSocketEvent(
     "new measurement",
-    useCallback((data: LiveData) => {
-      onData?.(data);
-      setData(data);
-    }, [])
+    useCallback(
+      (data: LiveData) => {
+        onData?.(data);
+        setData(data);
+      },
+      [onData]
+    )
   );
 
   useSocketIOEvent(
@@ -75,14 +82,15 @@ export function LiveWeather({
         }
         abortRef.current = null;
       } catch {}
-    }, [])
+    }, [onData])
   );
 
-  const selectCard = useCallback((field: HistoryField) => {
-    onFieldSelected?.(field);
-  }, []);
+  const selectCard = useCallback(
+    (field: HistoryField) => onFieldSelected?.(field),
+    [onFieldSelected]
+  );
 
-  useEffect(() => () => abortRef.current?.abort(), [abortRef]);
+  useEffect(() => () => abortRef.current?.abort(), []);
 
   return (
     <>

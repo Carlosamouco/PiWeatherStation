@@ -34,13 +34,9 @@ export class WeatherHistory {
       `
             INSERT INTO "weather history" (temperature, pressure, humidity) 
             VALUES ($1, $2, $3)
-            RETURNING temperature, pressure, humidity, measure_id
+            RETURNING temperature, pressure, humidity, measure_id, creation_date
             `,
-      [
-        _measure.temperature,
-        _measure.pressure,
-        _measure.humidity,
-      ]
+      [_measure.temperature, _measure.pressure, _measure.humidity]
     );
   }
 
