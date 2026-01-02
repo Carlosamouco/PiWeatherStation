@@ -420,21 +420,26 @@ export class D3WeatherChart {
 
   private _resizeCanvas(): void {
     const { width, height } = this._container.node()!.getBoundingClientRect();
+    const dpi = window.devicePixelRatio || 1;
 
-    // 1. Set the physical size (multiply by ratio)
-    this._hoverCanvas.width = this._mainCanvas.width = width;
-    this._hoverCanvas.height = this._mainCanvas.height = height;
+    this._hoverCanvas.width = this._mainCanvas.width = width * dpi;
+    this._hoverCanvas.height = this._mainCanvas.height = height * dpi;
 
-    // 2. Scale it back down with CSS so it fits the layout
     this._mainCanvas.style.width = `${width}px`;
     this._mainCanvas.style.height = `${height}px`;
     this._hoverCanvas.style.width = `${width}px`;
     this._hoverCanvas.style.height = `${height}px`;
+
+    [this._mainCtx, this._hoverCtx].forEach(ctx => {
+      ctx.scale(dpi, dpi);
+    });
   }
 
   private _canvasSize(): { width: number; height: number } {
-    const width = this._mainCanvas.width;
-    const height = this._mainCanvas.height;
+    const dpi = window.devicePixelRatio || 1;
+    
+    const width = this._mainCanvas.width / dpi;
+    const height = this._mainCanvas.height / dpi;
 
     return { width, height };
   }
