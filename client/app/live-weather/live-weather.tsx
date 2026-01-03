@@ -108,9 +108,9 @@ export function LiveWeather({
       try {
         const res = await fetch("/api/weather/last");
         if (res.ok) {
-          const data = await res.json();
+          const data = (await res.json()) as LiveData;
           onMeasure?.(data);
-          setData(adjustMeasure(data));
+          setData(adjustMeasure(data.currMeasure));
         }
       } catch {}
     }, [onMeasure])
