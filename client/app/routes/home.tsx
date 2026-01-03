@@ -129,7 +129,8 @@ function HomeView({ loaderData }: HomeViewProps) {
           <LiveWeather
             weather={weather}
             selectedField={field}
-            onData={onLiveData}
+            measure={loaderData?.history?.at(-1)}
+            onMeasure={onLiveData}
             onFieldSelected={onFieldSelected}
           />
         </div>

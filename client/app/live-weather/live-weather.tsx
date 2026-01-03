@@ -17,8 +17,9 @@ export interface LiveWeatherProps {
   weather: {
     name: string;
   };
+  measure?: WeatherHistory;
   selectedField: HistoryField;
-  onData?: (data: LiveData) => void;
+  onMeasure?: (data: LiveData) => void;
   onFieldSelected?: (field: HistoryField) => void;
 }
 
@@ -34,13 +35,36 @@ export function calculateSeaLevelPressure(
   return parseFloat(seaLevelPressure.toFixed(1));
 }
 
+function adjustMeasure(
+  measure: WeatherHistory | undefined
+): WeatherHistory | undefined {
+  if (!measure) {
+    return;
+  }
+
+  const { pressure, temperature } = measure;
+
+  const seaLvlPressure = calculateSeaLevelPressure(
+    Number.parseFloat(pressure),
+    Number.parseFloat(temperature)
+  );
+
+  return {
+    ...measure,
+    pressure: seaLvlPressure.toString(),
+  };
+}
+
 export function LiveWeather({
   weather,
   selectedField,
-  onData,
+  measure,
+  onMeasure,
   onFieldSelected,
 }: LiveWeatherProps) {
-  const [data, setData] = useState<WeatherHistory>();
+  const [data, setData] = useState<WeatherHistory | undefined>(
+    adjustMeasure(measure)
+  );
   const abortRef = useRef<AbortController | null>(null);
   const historyFields = useMemo(
     () =>
@@ -70,41 +94,26 @@ export function LiveWeather({
   useSocketEvent(
     "new measurement",
     useCallback(
-      (data: LiveData) => {
-        const { pressure, temperature } = data.currMeasure;
-
-        const seaLvlPressure = calculateSeaLevelPressure(
-          Number.parseFloat(pressure),
-          Number.parseFloat(temperature)
-        );
-
-        onData?.(data);
-        setData({
-          ...data.currMeasure,
-          pressure: seaLvlPressure.toString(),
-        });
+      (liveData: LiveData) => {
+        onMeasure?.(liveData);
+        setData(adjustMeasure(liveData.currMeasure));
       },
-      [onData]
+      [onMeasure]
     )
   );
 
   useSocketIOEvent(
     "reconnect",
     useCallback(async () => {
-      abortRef.current = new AbortController();
-
       try {
-        const res = await fetch("/api/weather/last", {
-          signal: abortRef.current.signal,
-        });
+        const res = await fetch("/api/weather/last");
         if (res.ok) {
           const data = await res.json();
-          onData?.(data);
-          setData(data);
+          onMeasure?.(data);
+          setData(adjustMeasure(data));
         }
-        abortRef.current = null;
       } catch {}
-    }, [onData])
+    }, [onMeasure])
   );
 
   const selectCard = useCallback(
