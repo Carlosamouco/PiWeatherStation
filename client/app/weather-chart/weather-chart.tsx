@@ -5,8 +5,6 @@ import { useTheme } from "~/theme/theme-context";
 import { D3WeatherChart, type DataPoint } from "./d3-weather-chart";
 import { calculateSeaLevelPressure } from "~/live-weather/live-weather";
 
-import mockData from "./data.json";
-
 export interface WeatherHistory {
   measure_id: string;
   creation_date: string;
@@ -118,7 +116,7 @@ export function WeatherChart({ data, field }: WeatherChartProps) {
     if (chart.current && data) {
       chart.current.units = getUnits();
       ((chart.current.colorScale = getColorScale()),
-        chart.current.draw(processHistory(mockData, field)));
+        chart.current.draw(processHistory(data, field)));
     }
   }, [data, theme, field]);
 
