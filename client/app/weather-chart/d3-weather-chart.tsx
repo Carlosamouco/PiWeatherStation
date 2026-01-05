@@ -253,24 +253,22 @@ export class D3WeatherChart {
     for (let i = this._data.length - 1; i >= 0; i--) {
       const d = this._data[i];
 
-      const pX = this._scale!.sX(d.x);
-      const prevSlot = Math.floor((p0X - lastPx) / interval) + 1;
-      const nextSlot = Math.floor((p0X - pX) / interval) + 1;
-
-      if (
-        lastPx - pX === 0 ||
-        (nextSlot > prevSlot && lastPx - pX - 1 > interval)
-      ) {
-        lastPx = pX;
-      }
-
       const xPix = sX(d.x);
       const yPix = sY(d.y);
 
       // Optimization: Skip off-screen points
       if (xPix < -20 || xPix > width + 20) continue;
 
-      if (lastPx === pX) {
+      const pX = this._scale!.sX(d.x);
+      const prevX = this._scale!.sX((this._data[i + 1] ?? d)?.x);
+      const prevSlot = Math.floor((p0X - prevX) / interval) + 1;
+      const nextSlot = Math.floor((p0X - pX) / interval) + 1;
+
+      if (
+        prevX - pX === 0 ||
+        (nextSlot > prevSlot && lastPx - pX > interval - 1)
+      ) {
+        lastPx = pX;
         this._drawPoint(d, { xPix, yPix });
       }
 
@@ -430,14 +428,14 @@ export class D3WeatherChart {
     this._hoverCanvas.style.width = `${width}px`;
     this._hoverCanvas.style.height = `${height}px`;
 
-    [this._mainCtx, this._hoverCtx].forEach(ctx => {
+    [this._mainCtx, this._hoverCtx].forEach((ctx) => {
       ctx.scale(dpi, dpi);
     });
   }
 
   private _canvasSize(): { width: number; height: number } {
     const dpi = window.devicePixelRatio || 1;
-    
+
     const width = this._mainCanvas.width / dpi;
     const height = this._mainCanvas.height / dpi;
 
