@@ -76,16 +76,16 @@ export function LiveWeather({
           units: "ºC",
         },
         {
-          Icon: WiHumidity,
-          label: "Humidade",
-          field: "humidity",
-          units: "%",
-        },
-        {
           Icon: WiBarometer,
           label: "Pressão",
           field: "pressure",
           units: "hPa",
+        },
+        {
+          Icon: WiHumidity,
+          label: "Humidade",
+          field: "humidity",
+          units: "%",
         },
       ] as const,
     []
