@@ -247,9 +247,8 @@ export class D3WeatherChart {
     const interval = this._getPointInterval(transform);
 
     // Pre-calculate p0X for your anchor logic
-    const p0X = this._scale.sX(this._data.at(-1)!.x);
+    let p0X = this._scale.sX(this._data.at(-1)!.x);
     let lastPx = p0X;
-    let prevSlot = 0;
 
     for (let i = this._data.length - 1; i >= 0; i--) {
       const d = this._data[i];
@@ -258,19 +257,17 @@ export class D3WeatherChart {
       const yPix = sY(d.y);
 
       const pX = this._scale!.sX(d.x);
-      const nextSlot = Math.floor((p0X - pX) / interval) + 1;
-      const shouldDrawPoint =
-        prevSlot === 0 || (nextSlot > prevSlot && lastPx - pX > interval);
 
-      if (shouldDrawPoint) {
+      const drawPoint = pX === p0X || lastPx - pX >= interval - 0.1;
+
+      if (drawPoint) {
         lastPx = pX;
-        prevSlot = nextSlot;
       }
 
       // Skip off-screen points
       if (xPix < -20 || xPix > width + 20) continue;
 
-      if (shouldDrawPoint) {
+      if (drawPoint) {
         this._drawPoint(d, { xPix, yPix });
       }
 
