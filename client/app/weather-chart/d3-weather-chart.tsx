@@ -258,7 +258,7 @@ export class D3WeatherChart {
 
       const pX = this._scale!.sX(d.x);
 
-      const drawPoint = pX === p0X || lastPx - pX >= interval - 0.1;
+      const drawPoint = pX === p0X || lastPx - pX >= interval - 0.5;
 
       if (drawPoint) {
         lastPx = pX;
