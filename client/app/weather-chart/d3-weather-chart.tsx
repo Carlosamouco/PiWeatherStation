@@ -244,11 +244,11 @@ export class D3WeatherChart {
     this._mainCtx.stroke();
 
     // 3. Draw Points & Labels (Using your deterministic anchor logic)
-    const interval = this._getPointInterval(transform);
+    const [interval, every] = this._getPointIntervals(transform);
 
     // Pre-calculate p0X for your anchor logic
-    let p0X = this._scale.sX(this._data.at(-1)!.x);
-    let lastPx = p0X;
+    let lastPx: number | null = null;
+    let pointsDrawn: number = -1;
 
     for (let i = this._data.length - 1; i >= 0; i--) {
       const d = this._data[i];
@@ -258,10 +258,11 @@ export class D3WeatherChart {
 
       const pX = this._scale!.sX(d.x);
 
-      const drawPoint = pX === p0X || lastPx - pX >= interval - 0.5;
-
-      if (drawPoint) {
+      let drawPoint = false;
+      if (lastPx == null || lastPx - pX >= interval) {
         lastPx = pX;
+        pointsDrawn++;
+        drawPoint = pointsDrawn % every === 0;
       }
 
       // Skip off-screen points
@@ -406,13 +407,16 @@ export class D3WeatherChart {
     this._drawHover();
   }
 
-  private _getPointInterval(transform: { k: number }) {
-    const baseInterval = 80;
-    return transform.k <= 2
-      ? baseInterval
-      : transform.k <= 4
-        ? baseInterval / 2
-        : baseInterval / 4;
+  private _getPointIntervals(transform: { k: number }): [number, number] {
+    let reps = 4;
+
+    if (transform.k >= 4) {
+      reps = 1;
+    } else if (transform.k >= 2) {
+      reps = 2;
+    }
+
+    return [15, reps];
   }
 
   private _resizeCanvas(): void {
