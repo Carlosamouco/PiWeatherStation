@@ -131,7 +131,7 @@ export function activeForecast(data: ForecastData[]): ForecastData | undefined {
   const currDate = new Date();
   currDate.setMinutes(0, 0, 0);
 
-  for (let i in data) {
+  for (const i in data) {
     if (
       new Date(data[i].dataPrev).getTime() === currDate.getTime() &&
       data[i].idPeriodo === 1

@@ -44,7 +44,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const data = useRouteLoaderData("root") as { theme?: "light" | "dark" };
 
   return (
-    <html lang="en" className={data?.theme}>
+    <html lang="pt" className={data?.theme}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

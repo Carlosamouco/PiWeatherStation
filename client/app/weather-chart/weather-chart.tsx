@@ -115,8 +115,8 @@ export function WeatherChart({ data, field }: WeatherChartProps) {
   useEffect(() => {
     if (chart.current && data) {
       chart.current.units = getUnits();
-      ((chart.current.colorScale = getColorScale()),
-        chart.current.draw(processHistory(data, field)));
+      chart.current.colorScale = getColorScale();
+      chart.current.draw(processHistory(data, field));
     }
   }, [data, theme, field]);
 
@@ -167,7 +167,7 @@ export function WeatherChart({ data, field }: WeatherChartProps) {
 
 function processHistory(
   data: WeatherHistory[],
-  kind: WeatherChartProps["field"]
+  kind: WeatherChartProps["field"],
 ): DataPoint[] {
   return data.map((d) => {
     let y = Number.parseFloat(d[kind]);
@@ -175,7 +175,7 @@ function processHistory(
     if (kind === "pressure") {
       y = calculateSeaLevelPressure(
         Number.parseFloat(d.pressure),
-        Number.parseFloat(d.temperature)
+        Number.parseFloat(d.temperature),
       );
     }
 

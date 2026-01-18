@@ -26,7 +26,7 @@ export interface LiveWeatherProps {
 export function calculateSeaLevelPressure(
   rawPressure: number,
   tempC: number,
-  altitude: number = 179.5
+  altitude: number = 179.5,
 ) {
   // Standard barometric formula for altitude compensation
   const ratio = 1 - (0.0065 * altitude) / (tempC + 0.0065 * altitude + 273.15);
@@ -36,7 +36,7 @@ export function calculateSeaLevelPressure(
 }
 
 function adjustMeasure(
-  measure: WeatherHistory | undefined
+  measure: WeatherHistory | undefined,
 ): WeatherHistory | undefined {
   if (!measure) {
     return;
@@ -46,7 +46,7 @@ function adjustMeasure(
 
   const seaLvlPressure = calculateSeaLevelPressure(
     Number.parseFloat(pressure),
-    Number.parseFloat(temperature)
+    Number.parseFloat(temperature),
   );
 
   return {
@@ -63,7 +63,7 @@ export function LiveWeather({
   onFieldSelected,
 }: LiveWeatherProps) {
   const [data, setData] = useState<WeatherHistory | undefined>(
-    adjustMeasure(measure)
+    adjustMeasure(measure),
   );
   const abortRef = useRef<AbortController | null>(null);
   const historyFields = useMemo(
@@ -88,7 +88,7 @@ export function LiveWeather({
           units: "%",
         },
       ] as const,
-    []
+    [],
   );
 
   useSocketEvent(
@@ -98,8 +98,8 @@ export function LiveWeather({
         onMeasure?.(liveData);
         setData(adjustMeasure(liveData.currMeasure));
       },
-      [onMeasure]
-    )
+      [onMeasure],
+    ),
   );
 
   useSocketIOEvent(
@@ -112,13 +112,15 @@ export function LiveWeather({
           onMeasure?.(data);
           setData(adjustMeasure(data.currMeasure));
         }
-      } catch {}
-    }, [onMeasure])
+      } catch (e) {
+        console.error(e);
+      }
+    }, [onMeasure]),
   );
 
   const selectCard = useCallback(
     (field: HistoryField) => onFieldSelected?.(field),
-    [onFieldSelected]
+    [onFieldSelected],
   );
 
   useEffect(() => () => abortRef.current?.abort(), []);

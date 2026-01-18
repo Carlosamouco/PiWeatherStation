@@ -15,10 +15,10 @@ import {
 } from "~/weather-chart/weather-chart";
 import { useSocketIOEvent } from "~/socket.io/socket-event";
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
     { title: "RasPi Meteo" },
-    { name: "description", content: "Welcome to React Router!" },
+    { name: "description", content: "Raspberry Pi BME280 Weather Station" },
   ];
 }
 
@@ -28,7 +28,7 @@ function fetchHistory(init?: RequestInit) {
 
   return fetch(
     "/api/weather/" + yesterday.toISOString() + "/" + now.toISOString(),
-    init
+    init,
   );
 }
 
@@ -46,21 +46,24 @@ export async function clientLoader() {
   if (ipmaResponse.status === "fulfilled" && ipmaResponse.value.ok) {
     try {
       res.forecast = await ipmaResponse.value.json();
-    } catch {}
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   if (weatherResponse.status === "fulfilled" && weatherResponse.value.ok) {
     try {
       res.history = await weatherResponse.value.json();
-    } catch {}
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   return res;
 }
 
 interface HomeViewProps {
-  loaderData: Awaited<ReturnType<typeof clientLoader>> /* &
-    Awaited<ReturnType<typeof loader>> */;
+  loaderData: Awaited<ReturnType<typeof clientLoader>>;
 }
 
 function HomeView({ loaderData }: HomeViewProps) {
@@ -106,8 +109,10 @@ function HomeView({ loaderData }: HomeViewProps) {
         }
 
         abortRef.current = null;
-      } catch {}
-    }, [])
+      } catch (e) {
+        console.error(e);
+      }
+    }, []),
   );
 
   useEffect(() => () => abortRef.current?.abort(), []);
