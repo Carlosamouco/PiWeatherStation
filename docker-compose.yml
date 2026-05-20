@@ -4,6 +4,7 @@ services:
       context: ./database
       args:
         ARCH_DB: ${ARCH_DB}
+    restart: always
     volumes:
       - ./database/.pgdata:/var/lib/postgresql
     ports:
@@ -16,6 +17,7 @@ services:
       context: ./pgadmin
       args:
         ARCH_PGADMIN: ${ARCH_PGADMIN}
+    restart: always
     volumes:
       - ./pgadmin:/data
     ports:
@@ -24,6 +26,8 @@ services:
       - ./pgadmin/.env
     links:
       - database:postgres
+    depends_on:
+      - database
 
   client:
     build:
@@ -31,9 +35,12 @@ services:
       target: ${BUILD_TARGET}
       args:
         ARCH_NODE: ${ARCH_NODE}
+    restart: always
     ports:
       - "4200:4200"
     links:
+      - server
+    depends_on:
       - server
 
   server:
@@ -42,6 +49,7 @@ services:
       target: ${BUILD_TARGET}
       args:
         ARCH_NODE: ${ARCH_NODE}
+    restart: always
     ports:
       - "3333:3333"
     privileged: true
@@ -52,14 +60,19 @@ services:
       - "988" # getent group i2c | cut -d: -f3
     links:
       - database:postgres
+    depends_on:
+      - database
 
   nginx:
     build:
       context: ./nginx
       args:
         ARCH_NGINX: ${ARCH_NGINX}
+    restart: always
     ports:
       - "80:80"
     links:
       # - client
+      - server
+    depends_on:
       - server
