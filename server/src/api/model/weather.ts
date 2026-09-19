@@ -24,6 +24,7 @@ export class WeatherHistory {
       `
             SELECT * from "weather history" 
             WHERE creation_date >= $1 AND creation_date <= $2
+            ORDER BY creation_date ASC
             `,
       [start, end]
     );
