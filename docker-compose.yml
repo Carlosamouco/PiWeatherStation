@@ -20,6 +20,7 @@ services:
     restart: always
     volumes:
       - ./pgadmin:/data
+      - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
     ports:
       - "5050:5050"
     env_file:

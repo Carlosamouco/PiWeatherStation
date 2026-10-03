@@ -1,0 +1,15 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "PiWeatherStation",
+      "Group": "Servers",
+      "Host": "database",
+      "Port": 5432,
+      "MaintenanceDB": "weatherDB",
+      "Username": "postgres",
+      "ConnectionParameters": {
+        "sslmode": "prefer"
+      }
+    }
+  }
+}
