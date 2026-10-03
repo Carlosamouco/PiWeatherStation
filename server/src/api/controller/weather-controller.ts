@@ -9,7 +9,10 @@ export class WeatherController {
       .catch((error) => res.status(400).json(error));
   }
 
-  static getByDate(req: express.Request, res: express.Response): void {
+  static getByDate(
+    req: express.Request<{ start: string; end: string }>,
+    res: express.Response,
+  ): void {
     WeatherHistory.getByDate(req.params.start, req.params.end)
       .then((result) => res.status(200).json(result.rows))
       .catch((error) => res.status(400).json(error));
@@ -29,13 +32,19 @@ export class WeatherController {
       .catch((error) => res.status(400).json(error));
   }
 
-  static getDailySummary(req: express.Request, res: express.Response): void {
+  static getDailySummary(
+    req: express.Request<{ start: string; end: string }>,
+    res: express.Response,
+  ): void {
     WeatherHistory.getDailySummary(req.params.start, req.params.end)
       .then((result) => res.status(200).json(result.rows))
       .catch((error) => res.status(400).json(error));
   }
 
-  static getDetailedSummary(req: express.Request, res: express.Response): void {
+  static getDetailedSummary(
+    req: express.Request<{ interval: string; start: string; end: string }>,
+    res: express.Response,
+  ): void {
     WeatherHistory.getDetailedSummary(
       req.params.interval,
       req.params.start,

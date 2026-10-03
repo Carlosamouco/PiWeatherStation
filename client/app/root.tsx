@@ -8,7 +8,7 @@ import {
   useRouteLoaderData,
   type LoaderFunctionArgs,
 } from "react-router";
-import { parse } from "cookie";
+import { parseCookie } from "cookie";
 
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -34,7 +34,7 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const cookies = parse(request.headers.get("cookie") ?? "");
+  const cookies = parseCookie(request.headers.get("cookie") ?? "");
   const userPrefs = cookies["user-prefs"];
 
   return userPrefs ? JSON.parse(userPrefs) : {};

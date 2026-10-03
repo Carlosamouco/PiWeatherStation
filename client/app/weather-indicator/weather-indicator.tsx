@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { IconType } from "react-icons/lib";
 import BlinkText from "~/blink-text/blink-text";
 

@@ -2,7 +2,9 @@ services:
   server:
     volumes:
       - ./server:/app
+      - /app/node_modules
 
   client:
     volumes:
       - ./client:/app
+      - /app/node_modules
