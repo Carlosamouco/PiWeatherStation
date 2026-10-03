@@ -80,7 +80,7 @@ const humidityColorScale = d3
 export function WeatherChart({ data, field }: WeatherChartProps) {
   const chartRef = useRef<HTMLDivElement>(null);
   const chart = useRef<D3WeatherChart>(null);
-  const [theme] = useTheme();
+  const [, , colorScheme] = useTheme();
 
   const [point, setPoint] = useState<DataPoint | null>(null);
 
@@ -89,9 +89,11 @@ export function WeatherChart({ data, field }: WeatherChartProps) {
 
   const getColorScale = () => {
     if (field === "temperature") {
-      return theme === "dark" ? temperatureColorScale : temperatureColorScale;
+      return colorScheme === "dark"
+        ? temperatureColorScale
+        : temperatureColorScale;
     } else if (field === "pressure") {
-      return theme === "dark"
+      return colorScheme === "dark"
         ? pressureColorScaleDark
         : pressureColorScaleLight;
     } else {
@@ -118,7 +120,7 @@ export function WeatherChart({ data, field }: WeatherChartProps) {
       chart.current.colorScale = getColorScale();
       chart.current.draw(processHistory(data, field));
     }
-  }, [data, theme, field]);
+  }, [data, colorScheme, field]);
 
   if (!data || data.length === 0) {
     return (

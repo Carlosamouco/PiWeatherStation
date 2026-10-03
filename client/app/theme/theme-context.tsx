@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useState,
 } from "react";
 import { useUserSettings } from "~/user/user-context";
 import { isDay } from "~/forecast/forecast-data";
@@ -13,7 +14,7 @@ export const THEMES = ["auto", "light", "dark"] as const;
 export type Theme = (typeof THEMES)[number];
 
 const ThemeContext = createContext<
-  readonly [Theme, (theme: Theme) => void] | null
+  readonly [Theme, (theme: Theme) => void, "light" | "dark"] | null
 >(null);
 
 export function useTheme() {
@@ -28,7 +29,10 @@ export function useTheme() {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useUserSettings();
-  const theme = settings.theme ?? "auto";
+  const theme = settings.theme || "auto";
+  const [colorScheme, setColorScheme] = useState<"light" | "dark">(
+    theme === "dark" ? "dark" : "light",
+  );
 
   const setTheme = useCallback(
     (mode: Theme) => setSettings({ ...settings, theme: mode }),
@@ -36,16 +40,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 
   const contextValue = useMemo(
-    () => [theme, setTheme] as const,
-    [settings.theme, setTheme],
+    () => [theme, setTheme, colorScheme] as const,
+    [theme, setTheme, colorScheme],
   );
 
   useEffect(() => {
     const updateTheme = () => {
-      const resolvedTheme =
+      const nextTheme =
         theme === "auto" ? (isDay(new Date()) ? "light" : "dark") : theme;
       document.documentElement.classList.remove("dark", "light");
-      document.documentElement.classList.add(resolvedTheme);
+      document.documentElement.classList.add(nextTheme);
+      setColorScheme(nextTheme);
     };
 
     updateTheme();
@@ -56,7 +61,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     const interval = window.setInterval(updateTheme, 30_000);
     return () => window.clearInterval(interval);
-  }, [settings.theme]);
+  }, [theme]);
 
   return <ThemeContext value={contextValue}>{children}</ThemeContext>;
 }
