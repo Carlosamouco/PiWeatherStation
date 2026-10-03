@@ -17,7 +17,7 @@ export function setCookie(name: string, value: string) {
 }
 
 export interface UserSettings {
-  theme: "dark" | "light" | null;
+  theme: "dark" | "light" | "auto" | null;
 }
 
 const UserSettingsContext = createContext<
@@ -29,7 +29,7 @@ export function useUserSettings() {
 
   if (!context) {
     throw new Error(
-      "useUserSettings must be used within a UserSettingsContext"
+      "useUserSettings must be used within a UserSettingsContext",
     );
   }
 
@@ -42,7 +42,7 @@ export function UserSettingsProvider({
   children: React.ReactNode;
 }) {
   const [prefs, setPrefs] = useState<UserSettings>(
-    useRouteLoaderData("root") ?? { theme: null }
+    useRouteLoaderData("root") ?? { theme: null },
   );
   const setUserSettings = useCallback((settings: UserSettings) => {
     setPrefs(settings);
@@ -50,7 +50,7 @@ export function UserSettingsProvider({
   }, []);
   const contextValue = useMemo(
     () => [prefs, setUserSettings] as const,
-    [prefs, setUserSettings]
+    [prefs, setUserSettings],
   );
 
   return (

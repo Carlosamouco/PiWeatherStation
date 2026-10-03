@@ -4,12 +4,16 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
 } from "react";
 import { useUserSettings } from "~/user/user-context";
+import { isDay } from "~/forecast/forecast-data";
+
+export const THEMES = ["auto", "light", "dark"] as const;
+
+export type Theme = (typeof THEMES)[number];
 
 const ThemeContext = createContext<
-  readonly ["dark" | "light", (theme: "dark" | "light") => void] | null
+  readonly [Theme, (theme: Theme) => void] | null
 >(null);
 
 export function useTheme() {
@@ -24,33 +28,35 @@ export function useTheme() {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useUserSettings();
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const theme = settings.theme ?? "auto";
 
-  const loadTheme = useCallback((theme: "dark" | "light") => {
-    document.documentElement.classList.remove("dark", "light");
-    document.documentElement.classList.add(theme);
-    setTheme(theme);
-    setSettings({ ...settings, theme: theme });
-  }, []);
+  const setTheme = useCallback(
+    (mode: Theme) => setSettings({ ...settings, theme: mode }),
+    [settings, setSettings],
+  );
 
   const contextValue = useMemo(
-    () => [theme, loadTheme] as const,
-    [theme, loadTheme]
+    () => [theme, setTheme] as const,
+    [settings.theme, setTheme],
   );
 
   useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const updateTheme = () => {
+      const resolvedTheme =
+        theme === "auto" ? (isDay(new Date()) ? "light" : "dark") : theme;
+      document.documentElement.classList.remove("dark", "light");
+      document.documentElement.classList.add(resolvedTheme);
+    };
 
-    const theme = settings.theme
-      ? settings.theme === "dark"
-        ? "dark"
-        : "light"
-      : media.matches
-        ? "dark"
-        : "light";
+    updateTheme();
 
-    loadTheme(theme);
-  }, [loadTheme]);
+    if (theme !== "auto") {
+      return;
+    }
+
+    const interval = window.setInterval(updateTheme, 30_000);
+    return () => window.clearInterval(interval);
+  }, [settings.theme]);
 
   return <ThemeContext value={contextValue}>{children}</ThemeContext>;
 }
